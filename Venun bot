@@ -1,0 +1,53 @@
+from telegram import Update
+from telegram.ext import ApplicationBuilder, CommandHandler, ContextTypes
+
+BOT_TOKEN = "7776379137:AAH_9wMBfi_j82NLDZjlKmxzjVK2A6sCAFw"
+
+def analyse_cotes(v1_open, v1_now, v2_open, v2_now):
+    v1_change = round(v1_open - v1_now, 2)
+    v2_change = round(v2_open - v2_now, 2)
+    v1_msg, v2_msg = "", ""
+
+    if v1_change >= 0.3:
+        v1_msg = f"""╭━━━ 𝗖𝗢𝗧𝗘𝗦 𝗩𝟭 (Équipe A) ━━━╮
+📉 Chute détectée : {v1_open} ➤ {v1_now}
+🎯 Confiance sur l’équipe à domicile !
+⚽ Reco : ⤷ 𝙏𝙤𝙩𝙖𝙡 𝟭 ⩾ 1.5 buts
+╰━━━━━━━━━━━━━━━━━━━━━━╯"""
+    elif v1_now - v1_open >= 0.25:
+        v1_msg = f"""╭━━━ 𝗖𝗢𝗧𝗘𝗦 𝗩𝟭 (Équipe A) ━━━╮
+📈 Hausse détectée : {v1_open} ➤ {v1_now}
+😬 Moins de confiance pour l’équipe A.
+🚫 Reco : ⤷ 𝙏𝙤𝙩𝙖𝙡 𝟭 ≤ 2.5 buts
+╰━━━━━━━━━━━━━━━━━━━━━━╯"""
+
+    if v2_change >= 0.3:
+        v2_msg = f"""╭━━━ 𝗖𝗢𝗧𝗘𝗦 𝗩𝟮 (Équipe B) ━━━╮
+📉 Chute détectée : {v2_open} ➤ {v2_now}
+⚔️ Attente de performance à l'extérieur !
+⚽ Reco : ⤷ 𝙏𝙤𝙩𝙖𝙡 𝟮 ⩾ 0.5 / 1.5 buts
+╰━━━━━━━━━━━━━━━━━━━━━━╯"""
+    elif v2_now - v2_open >= 0.4:
+        v2_msg = f"""╭━━━ 𝗖𝗢𝗧𝗘𝗦 𝗩𝟮 (Équipe B) ━━━╮
+📈 Hausse détectée : {v2_open} ➤ {v2_now}
+⚠️ Baisse de confiance à l’extérieur.
+🚫 Reco : ⤷ 𝙏𝙤𝙩𝙖𝙡 𝟮 ≤ 1.5 buts
+╰━━━━━━━━━━━━━━━━━━━━━━╯"""
+
+    if not v1_msg and not v2_msg:
+        return "🔎 Aucune variation significative détectée."
+
+    return f"🔍 Analyse des COTES 🧠\n\n{v1_msg}\n\n{v2_msg}\n\n📊 Suis les signaux 📈 pour des mises ⚡️"
+
+async def analyser(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    try:
+        data = {line.split(':')[0].strip(): float(line.split(':')[1].strip()) for line in update.message.text.split('\n')[1:]}
+        result = analyse_cotes(data['V1_ouverture'], data['V1_actuelle'], data['V2_ouverture'], data['V2_actuelle'])
+        await update.message.reply_text(result)
+    except Exception:
+        await update.message.reply_text("❌ Format incorrect. Exemple :\n"
+                                        "/analyser\nV1_ouverture: 2.3\nV1_actuelle: 1.62\nV2_ouverture: 2.6\nV2_actuelle: 3.9")
+
+app = ApplicationBuilder().token(BOT_TOKEN).build()
+app.add_handler(CommandHandler("analyser", analyser))
+app.run_polling()
