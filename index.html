@@ -1,282 +1,1298 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>VENUN - Scanner Caméra Live</title>
-    <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: system-ui, sans-serif; user-select: none; }
-        body { background-color: #0d0d0f; color: #e0e0e0; display: flex; justify-content: center; align-items: center; min-height: 100vh; padding: 15px; }
-        :root { --bg-color: #121215; --purple-accent: #8b5cf6; --copper-accent: #d97706; --shadow-dark: #09090b; --shadow-light: #1b1b1f; }
-        .scanner-card { width: 100%; max-width: 400px; background: var(--bg-color); border-radius: 28px; padding: 20px; box-shadow: 8px 8px 18px var(--shadow-dark), -8px -8px 18px var(--shadow-light); border: 1px solid rgba(255, 255, 255, 0.03); display: flex; flex-direction: column; gap: 16px; }
-        .header { text-align: center; }
-        .brand-title { font-size: 22px; font-weight: 900; letter-spacing: 2px; background: linear-gradient(135deg, #ffffff, var(--copper-accent)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>VENUN - Espace Agent</title>
+  <style>
+    :root {
+      --bg-main: #0d111a;
+      --bg-card: #131824;
+      --bg-card-alt: #1a2030;
+      --bg-modal: #161c2b;
+      --accent-green: #00e676;
+      --accent-green-glow: rgba(0, 230, 118, 0.4);
+      --danger-red: #ff3d71;
+      --danger-red-glow: rgba(255, 61, 113, 0.4);
+      --warning-amber: #ffaa00;
+      --accent-blue: #00b0ff;
+      --text-main: #ffffff;
+      --text-muted: #8a99ad;
+      --border-light: rgba(255, 255, 255, 0.08);
+      --nav-bg: #121722;
+      --nav-active-bg: #ffffff;
+      --nav-active-text: #0b0e14;
+      --radius-lg: 22px;
+      --radius-md: 14px;
+      --radius-sm: 8px;
+    }
 
-        .viewport-container { 
-            width: 100%; 
-            height: 320px; /* Hauteur fixe pour le conteneur */
-            background: #000; 
-            border-radius: 18px; 
-            position: relative; 
-            overflow: hidden; 
-            display: flex; 
-            justify-content: center; 
-            align-items: center; 
-            box-shadow: inset 3px 3px 8px var(--shadow-dark), inset -3px -3px 8px var(--shadow-light); 
-        }
+    /* THÈME CLAIR */
+    [data-theme="light"] {
+      --bg-main: #f0f3f8;
+      --bg-card: #ffffff;
+      --bg-card-alt: #e4e9f2;
+      --bg-modal: #ffffff;
+      --text-main: #0d111a;
+      --text-muted: #627284;
+      --border-light: rgba(0, 0, 0, 0.08);
+      --nav-bg: #ffffff;
+      --nav-active-bg: #0d111a;
+      --nav-active-text: #ffffff;
+    }
 
-        #video-element { display: none; }
-        /* Le canvas s'adapte à la taille du conteneur tout en gardant son ratio */
-        #debug-canvas { width: 100%; height: 100%; object-fit: cover; }
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      user-select: none;
+    }
 
-        .actions-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-        .neu-btn { background: var(--bg-color); border: none; border-radius: 14px; box-shadow: 4px 4px 10px var(--shadow-dark), -4px -4px 10px var(--shadow-light); color: #fff; padding: 12px; font-weight: 600; font-size: 13px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; }
-        .neu-btn:active { box-shadow: inset 3px 3px 6px var(--shadow-dark), inset -3px -3px 6px var(--shadow-light); color: var(--purple-accent); }
-        #gallery-input { display: none; }
+    html, body {
+      width: 100%;
+      height: 100%;
+      background-color: var(--bg-main);
+      color: var(--text-main);
+      overflow-x: hidden;
+      transition: background-color 0.3s ease, color 0.3s ease;
+    }
 
-        .result-box { background: var(--bg-color); border-radius: 16px; padding: 16px; box-shadow: inset 3px 3px 6px var(--shadow-dark), inset -3px -3px 6px var(--shadow-light); text-align: center; }
-        .result-label { font-size: 11px; color: #888; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 4px; }
-        .result-value { font-size: 22px; font-weight: 800; color: var(--purple-accent); letter-spacing: 2px; }
-    </style>
+    /* TOAST NOTIFICATION BANNER */
+    .toast {
+      position: fixed;
+      top: -60px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: var(--accent-green);
+      color: #000000;
+      padding: 12px 22px;
+      border-radius: 30px;
+      font-weight: 700;
+      font-size: 0.85rem;
+      box-shadow: 0 8px 25px var(--accent-green-glow);
+      z-index: 3000;
+      transition: top 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .toast.show {
+      top: 20px;
+    }
+
+    /* Conteneur Plein Écran */
+    .app-container {
+      width: 100vw;
+      min-height: 100dvh;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      background: var(--bg-main);
+    }
+
+    /* Wrapper des Pages */
+    .pages-wrapper {
+      flex: 1;
+      overflow-y: auto;
+      padding: 20px 16px calc(100px + env(safe-area-inset-bottom)) 16px;
+    }
+
+    .page {
+      display: none;
+      animation: fadeIn 0.25s ease-in-out;
+      max-width: 600px;
+      margin: 0 auto;
+    }
+
+    .page.active {
+      display: block;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .page-title {
+      font-size: 1.4rem;
+      font-weight: 700;
+      margin-bottom: 18px;
+      color: var(--text-main);
+    }
+
+    /* CADRE SOLDE - DOUBLE SOUS-CARTES */
+    .balance-outer-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-light);
+      border-radius: var(--radius-lg);
+      padding: 16px;
+      margin-bottom: 20px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+    }
+
+    .card-top-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 14px;
+      padding: 0 2px;
+    }
+
+    .user-greeting {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: var(--accent-blue);
+    }
+
+    .brand-logo {
+      font-weight: 900;
+      font-size: 1.05rem;
+      letter-spacing: 1.5px;
+      background: linear-gradient(90deg, var(--text-main), var(--accent-green));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .balance-split-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    .sub-card {
+      background: var(--bg-card-alt);
+      border: 1px solid var(--border-light);
+      border-radius: 16px;
+      padding: 14px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      min-height: 95px;
+    }
+
+    .sub-card-label {
+      font-size: 0.72rem;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      font-weight: 600;
+    }
+
+    .status-container {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      margin-top: 6px;
+    }
+
+    .led {
+      width: 9px;
+      height: 9px;
+      border-radius: 50%;
+      display: inline-block;
+    }
+
+    .led-green {
+      background-color: var(--accent-green);
+      box-shadow: 0 0 8px var(--accent-green);
+      animation: wifiPulse 1.2s infinite ease-in-out;
+    }
+
+    @keyframes wifiPulse {
+      0% { opacity: 0.3; }
+      50% { opacity: 1; }
+      100% { opacity: 0.3; }
+    }
+
+    .sub-card-amount {
+      font-size: 1.15rem;
+      font-weight: 800;
+      color: var(--text-main);
+      margin-top: 6px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .currency {
+      font-size: 0.75rem;
+      color: var(--accent-green);
+      font-weight: 700;
+    }
+
+    /* Actions Grid */
+    .actions-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-bottom: 22px;
+    }
+
+    .top-actions-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 10px;
+    }
+
+    .btn {
+      background: var(--bg-card);
+      border: 1px solid var(--border-light);
+      color: var(--text-main);
+      padding: 14px 8px;
+      border-radius: var(--radius-md);
+      font-size: 0.85rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 5px;
+      transition: all 0.2s ease;
+    }
+
+    .btn:active {
+      transform: scale(0.96);
+      background: var(--bg-card-alt);
+    }
+
+    .btn-scanner {
+      width: 100%;
+      background: linear-gradient(90deg, var(--accent-blue), var(--accent-green));
+      color: #000000;
+      border: none;
+      font-weight: 800;
+      padding: 14px;
+      flex-direction: row;
+      font-size: 0.92rem;
+      box-shadow: 0 4px 16px var(--accent-green-glow);
+    }
+
+    /* Filtres Transactions */
+    .filter-bar {
+      display: flex;
+      gap: 8px;
+      overflow-x: auto;
+      padding-bottom: 8px;
+      margin-bottom: 14px;
+      scrollbar-width: none;
+    }
+
+    .filter-bar::-webkit-scrollbar { display: none; }
+
+    .filter-chip {
+      background: var(--bg-card);
+      border: 1px solid var(--border-light);
+      color: var(--text-muted);
+      padding: 8px 16px;
+      border-radius: 20px;
+      font-size: 0.78rem;
+      font-weight: 600;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: all 0.2s ease;
+    }
+
+    .filter-chip.active {
+      background: var(--text-main);
+      color: var(--bg-main);
+      border-color: var(--text-main);
+      font-weight: 700;
+    }
+
+    /* Transactions Coupons */
+    .coupon-list {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .coupon-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-light);
+      border-radius: var(--radius-md);
+      padding: 14px 16px;
+      position: relative;
+      box-shadow: 0 6px 15px rgba(0,0,0,0.08);
+      cursor: pointer;
+      transition: transform 0.15s ease;
+    }
+
+    .coupon-card:active {
+      transform: scale(0.98);
+    }
+
+    .coupon-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+
+    .coupon-status-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.72rem;
+      font-weight: 700;
+      padding: 4px 9px;
+      border-radius: 6px;
+      text-transform: uppercase;
+    }
+
+    .tag-depot { background: rgba(0, 230, 118, 0.15); color: var(--accent-green); }
+    .tag-retrait { background: rgba(255, 61, 113, 0.15); color: var(--danger-red); }
+    .tag-commission { background: rgba(255, 170, 0, 0.15); color: var(--warning-amber); }
+
+    .coupon-amount { font-size: 0.95rem; font-weight: 800; }
+    .coupon-amount.plus { color: var(--accent-green); }
+    .coupon-amount.minus { color: var(--danger-red); }
+
+    .coupon-divider {
+      border-top: 1px dashed var(--border-light);
+      margin: 8px 0;
+      width: 100%;
+    }
+
+    .coupon-bottom {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.7rem;
+      color: var(--text-muted);
+    }
+
+    .coupon-ref { font-family: monospace; opacity: 0.8; }
+
+    /* ========================================================
+       PAGE SCANNER MATRICE - STYLE CAMÉRA RÉELLE & GRILLAGE 10x10
+       ======================================================== */
+    .scanner-container {
+      background: var(--bg-card);
+      border: 1px solid var(--border-light);
+      border-radius: var(--radius-lg);
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      position: relative;
+      margin-bottom: 20px;
+    }
+
+    /* Fenêtre Viewport de la Caméra (Parfaitement Carrée) */
+    .viewport {
+      width: 100%;
+      max-width: 300px;
+      aspect-ratio: 1 / 1;
+      border-radius: var(--radius-md);
+      background-color: #1a1a1a;
+      position: relative;
+      overflow: hidden;
+      box-shadow: inset 0 0 15px rgba(0,0,0,0.8);
+      border: 1px solid var(--border-light);
+    }
+
+    /* Flux Vidéo de la Caméra */
+    .video-feed {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      opacity: 0.85;
+    }
+
+    /* Grillage Overlay 10x10 */
+    .grid-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      display: grid;
+      grid-template-columns: repeat(10, 1fr);
+      grid-template-rows: repeat(10, 1fr);
+      pointer-events: none;
+    }
+
+    .grid-cell {
+      border: 0.5px solid rgba(0, 230, 118, 0.3);
+      box-sizing: border-box;
+      transition: background-color 0.2s ease;
+    }
+
+    /* Cellule activée (sombre détectée) */
+    .grid-cell.active {
+      background-color: rgba(0, 230, 118, 0.6);
+      border: 1px solid var(--accent-green);
+    }
+
+    /* Cibles de coin */
+    .corner-target {
+      position: absolute;
+      width: 25px;
+      height: 25px;
+      border-color: var(--accent-green);
+      border-style: solid;
+      pointer-events: none;
+      z-index: 10;
+    }
+    .top-left { top: 8px; left: 8px; border-width: 3px 0 0 3px; }
+    .top-right { top: 8px; right: 8px; border-width: 3px 3px 0 0; }
+    .bottom-left { bottom: 8px; left: 8px; border-width: 0 0 3px 3px; }
+    .bottom-right { bottom: 8px; right: 8px; border-width: 0 3px 3px 0; }
+
+    /* Laser de Scan */
+    .laser-line {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 2px;
+      background: var(--accent-green);
+      box-shadow: 0 0 10px var(--accent-green);
+      animation: scanLaser 2s infinite linear;
+      display: none;
+      z-index: 5;
+    }
+
+    @keyframes scanLaser {
+      0% { top: 0; }
+      50% { top: 100%; }
+      100% { top: 0; }
+    }
+
+    .scan-status {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      margin-top: 15px;
+      font-weight: 600;
+      text-align: center;
+    }
+
+    .btn-action-scan {
+      width: 100%;
+      padding: 14px;
+      border-radius: var(--radius-md);
+      font-weight: 700;
+      font-size: 0.95rem;
+      border: none;
+      cursor: pointer;
+      margin-bottom: 20px;
+      background: linear-gradient(90deg, var(--accent-blue), var(--accent-green));
+      color: #000;
+      box-shadow: 0 4px 15px var(--accent-green-glow);
+    }
+
+    /* Résultats du Scan (Matrice Décodée) */
+    .matrix-result {
+      display: none;
+      width: 100%;
+      background: var(--bg-card-alt);
+      border-radius: var(--radius-md);
+      padding: 15px;
+      margin-top: 15px;
+      border: 1px solid var(--accent-green);
+    }
+    
+    .matrix-result.active {
+      display: block;
+      animation: fadeIn 0.3s ease;
+    }
+
+    /* Page Profil & Paramètres */
+    .profile-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-light);
+      border-radius: var(--radius-lg);
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      margin-bottom: 16px;
+    }
+
+    .profile-avatar {
+      width: 70px;
+      height: 70px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--accent-blue), var(--accent-green));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.8rem;
+      font-weight: 800;
+      color: #000;
+      margin-bottom: 12px;
+    }
+
+    .agent-badge {
+      background: rgba(0, 176, 255, 0.15);
+      color: var(--accent-blue);
+      padding: 4px 10px;
+      border-radius: 12px;
+      font-size: 0.7rem;
+      font-weight: 700;
+      margin-top: 5px;
+      border: 1px solid rgba(0, 176, 255, 0.3);
+    }
+
+    .profile-details-list {
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-top: 15px;
+    }
+
+    .profile-item {
+      display: flex;
+      justify-content: space-between;
+      padding: 10px 0;
+      border-bottom: 1px solid var(--border-light);
+      font-size: 0.85rem;
+    }
+
+    .profile-item:last-child { border-bottom: none; }
+    .profile-item .label { color: var(--text-muted); }
+    .profile-item .value { font-weight: 600; }
+
+    /* CARD PARAMÈTRES / THÈME */
+    .settings-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-light);
+      border-radius: var(--radius-lg);
+      padding: 18px;
+      margin-bottom: 16px;
+    }
+
+    .settings-title {
+      font-size: 0.95rem;
+      font-weight: 700;
+      margin-bottom: 14px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .theme-toggle-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-bottom: 16px;
+    }
+
+    .theme-btn {
+      background: var(--bg-card-alt);
+      border: 1px solid var(--border-light);
+      color: var(--text-main);
+      padding: 12px;
+      border-radius: var(--radius-md);
+      font-size: 0.85rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: all 0.2s ease;
+    }
+
+    .theme-btn.active {
+      border-color: var(--accent-green);
+      background: rgba(0, 230, 118, 0.12);
+      color: var(--accent-green);
+      font-weight: 700;
+    }
+
+    /* BARRE DE NAVIGATION FLOTTANTE */
+    .floating-navbar {
+      position: fixed;
+      bottom: calc(16px + env(safe-area-inset-bottom));
+      left: 50%;
+      transform: translateX(-50%);
+      width: calc(100% - 32px);
+      max-width: 420px;
+      background: var(--nav-bg);
+      border: 1px solid var(--border-light);
+      border-radius: 35px;
+      padding: 6px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 12px 30px rgba(0,0,0,0.25);
+      backdrop-filter: blur(12px);
+      z-index: 1000;
+      transition: background-color 0.3s ease;
+    }
+
+    .nav-btn {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 20px;
+      border-radius: 25px;
+      color: var(--text-muted);
+      font-size: 0.85rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.25s ease;
+      text-decoration: none;
+    }
+
+    .nav-btn .nav-text { display: none; }
+
+    .nav-btn-icon {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 20px;
+      height: 20px;
+    }
+
+    .nav-btn-icon svg {
+      width: 100%;
+      height: 100%;
+      stroke: var(--text-muted);
+      transition: stroke 0.25s ease;
+    }
+
+    .nav-btn.active {
+      background: var(--nav-active-bg);
+      color: var(--nav-active-text);
+      font-weight: 700;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+    }
+
+    .nav-btn.active .nav-text { display: inline; }
+    .nav-btn.active .nav-btn-icon svg { stroke: var(--nav-active-text); }
+
+    /* MODALES OVERLAY & DIALOGS */
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100dvh;
+      background: rgba(0, 0, 0, 0.75);
+      backdrop-filter: blur(5px);
+      display: none;
+      justify-content: center;
+      align-items: flex-end;
+      z-index: 2000;
+    }
+
+    .modal-overlay.active {
+      display: flex;
+      animation: slideUp 0.25s ease-out;
+    }
+
+    @keyframes slideUp {
+      from { transform: translateY(100%); }
+      to { transform: translateY(0); }
+    }
+
+    .modal-card {
+      width: 100%;
+      max-width: 500px;
+      background: var(--bg-modal);
+      border-top-left-radius: 28px;
+      border-top-right-radius: 28px;
+      border: 1px solid var(--border-light);
+      padding: 24px;
+      box-shadow: 0 -10px 30px rgba(0,0,0,0.5);
+    }
+
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+
+    .modal-title {
+      font-size: 1.15rem;
+      font-weight: 700;
+    }
+
+    .modal-close {
+      background: var(--bg-card-alt);
+      border: none;
+      color: var(--text-main);
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .form-group {
+      margin-bottom: 16px;
+    }
+
+    .form-label {
+      display: block;
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      margin-bottom: 6px;
+      text-transform: uppercase;
+      font-weight: 600;
+    }
+
+    .form-input, .form-select {
+      width: 100%;
+      background: var(--bg-main);
+      border: 1px solid var(--border-light);
+      padding: 12px 14px;
+      border-radius: var(--radius-md);
+      color: var(--text-main);
+      font-size: 0.95rem;
+      outline: none;
+    }
+
+    .form-input:focus, .form-select:focus {
+      border-color: var(--accent-green);
+    }
+
+    .btn-submit {
+      width: 100%;
+      background: var(--accent-green);
+      color: #000;
+      border: none;
+      padding: 14px;
+      border-radius: var(--radius-md);
+      font-weight: 800;
+      font-size: 0.95rem;
+      cursor: pointer;
+      margin-top: 10px;
+    }
+  </style>
 </head>
 <body>
 
-<div class="scanner-card">
-    <div class="header">
-        <div class="brand-title">VENUN POS SCANNER</div>
+<!-- TOAST NOTIFICATION -->
+<div id="toast" class="toast">
+  <span>⚡</span> <span id="toast-message">Action effectuée</span>
+</div>
+
+<div class="app-container">
+  <div class="pages-wrapper">
+
+    <!-- PAGE ACCUEIL AGENT -->
+    <div id="page-accueil" class="page active">
+      
+      <!-- CADRE SOLDE -->
+      <div class="balance-outer-card">
+        <div class="card-top-header">
+          <span class="user-greeting">Agent Venunye 👋</span>
+          <span class="brand-logo">VENUN</span>
+        </div>
+
+        <div class="balance-split-grid">
+          <div class="sub-card">
+            <span class="sub-card-label">Solde Caisse (Float)</span>
+            <div class="sub-card-amount" onclick="toggleBalance()">
+              <span id="balance-value">850 000</span> 
+              <span class="currency">FCFA</span>
+            </div>
+            <div class="status-container" style="margin-top:10px">
+              <span class="led led-green"></span>
+              <span style="color:var(--text-muted); font-size: 0.7rem;">Terminal Connecté</span>
+            </div>
+          </div>
+
+          <div class="sub-card">
+            <span class="sub-card-label">Commissions du jour</span>
+            <div class="sub-card-amount" style="color: var(--warning-amber);">
+              <span id="commission-value">4 250</span> 
+              <span class="currency" style="color: var(--warning-amber);">FCFA</span>
+            </div>
+             <div style="font-size: 0.7rem; color: var(--text-muted); margin-top:10px;">
+               12 Opérations
+             </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Actions Agent -->
+      <div class="actions-grid">
+        <div class="top-actions-row">
+          <button class="btn" onclick="openModal('modal-depot')">
+            <span style="font-size: 1.1rem; color: var(--accent-green);">⇡</span>
+            Dépôt Client
+          </button>
+          <button class="btn" onclick="openModal('modal-retrait')">
+            <span style="font-size: 1.1rem; color: var(--danger-red);">⇣</span>
+            Retrait Client
+          </button>
+          <button class="btn" onclick="switchTab('scanner', document.querySelectorAll('.nav-btn')[1])">
+            <span style="font-size: 1.1rem; color: var(--accent-blue);">◎</span>
+            Scan Carte
+          </button>
+        </div>
+        <button class="btn btn-scanner" onclick="openModal('modal-float')">
+          <span>+</span> Réapprovisionner la Caisse
+        </button>
+      </div>
+
+      <!-- Filtres Historique Agent -->
+      <div class="filter-bar">
+        <button class="filter-chip active" onclick="filterTransactions('all', this)">Toutes Opérations</button>
+        <button class="filter-chip" onclick="filterTransactions('depot', this)">Dépôts</button>
+        <button class="filter-chip" onclick="filterTransactions('retrait', this)">Retraits</button>
+        <button class="filter-chip" onclick="filterTransactions('commission', this)">Commissions</button>
+      </div>
+
+      <!-- Historique Transactions Agent -->
+      <div class="coupon-list" id="couponList">
+        <div class="coupon-card" data-type="depot">
+          <div class="coupon-top">
+            <span class="coupon-status-tag tag-depot">⇡ Dépôt Client</span>
+            <span class="coupon-amount minus">-15 000 FCFA</span>
+          </div>
+          <div class="coupon-divider"></div>
+          <div class="coupon-bottom">
+            <span class="coupon-ref">Matrice: #ID-A9B2</span>
+            <span>Aujourd'hui • 10:15</span>
+          </div>
+        </div>
+
+        <div class="coupon-card" data-type="commission">
+          <div class="coupon-top">
+            <span class="coupon-status-tag tag-commission">★ Commission</span>
+            <span class="coupon-amount plus">+150 FCFA</span>
+          </div>
+          <div class="coupon-divider"></div>
+          <div class="coupon-bottom">
+            <span class="coupon-ref">Réf: Dépôt #TX-918</span>
+            <span>Aujourd'hui • 10:15</span>
+          </div>
+        </div>
+
+        <div class="coupon-card" data-type="retrait">
+          <div class="coupon-top">
+            <span class="coupon-status-tag tag-retrait">⇣ Retrait Client</span>
+            <span class="coupon-amount plus">+25 000 FCFA</span>
+          </div>
+          <div class="coupon-divider"></div>
+          <div class="coupon-bottom">
+            <span class="coupon-ref">Tél: 90 ** ** 12</span>
+            <span>Hier • 16:40</span>
+          </div>
+        </div>
+      </div>
     </div>
 
-    <div class="viewport-container" id="viewport">
-        <video id="video-element" playsinline autoplay></video>
-        <canvas id="debug-canvas"></canvas>
+    <!-- PAGE SCANNER MATRICE INTEGRÉ -->
+    <div id="page-scanner" class="page">
+      <div class="page-title">Décodeur Matrice VENUN</div>
+
+      <div class="scanner-container">
+        <!-- VIEWPORT CAMÉRA RÉEL AVEC GRILLAGE 10x10 -->
+        <div class="viewport">
+          <video id="camera" class="video-feed" autoplay playsinline></video>
+
+          <div class="laser-line" id="scannerLaser"></div>
+
+          <div class="corner-target top-left"></div>
+          <div class="corner-target top-right"></div>
+          <div class="corner-target bottom-left"></div>
+          <div class="corner-target bottom-right"></div>
+
+          <!-- Grillage 10x10 dynamique -->
+          <div class="grid-overlay" id="grid"></div>
+        </div>
+
+        <div class="scan-status" id="scanStatusText">Alignez la carte Matrice dans le cadre</div>
+
+        <div class="matrix-result" id="scanResult">
+          <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+            <span style="font-size: 0.8rem; color: var(--text-muted);">ID MATRICE IDENTIFIÉ</span>
+            <strong style="color: var(--accent-green);" id="detectedMatrixId">#VN-77X-91</strong>
+          </div>
+          <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+            <span style="font-size: 0.8rem; color: var(--text-muted);">NOM DU CLIENT</span>
+            <strong>Client Autorisé</strong>
+          </div>
+          <div style="display: flex; justify-content: space-between;">
+             <button class="btn-submit" style="padding: 10px; font-size: 0.8rem; width: 48%;" onclick="openModalWithClient('modal-depot')">Dépôt</button>
+             <button class="btn-submit" style="padding: 10px; font-size: 0.8rem; width: 48%; background: var(--danger-red); color: white;" onclick="openModalWithClient('modal-retrait')">Retrait</button>
+          </div>
+        </div>
+      </div>
+
+      <button id="btn-scan-trigger" class="btn-action-scan" onclick="triggerScan()">
+        Décoder la Carte Matrice
+      </button>
     </div>
 
-    <div class="actions-grid">
-        <button class="neu-btn" onclick="startCamera()">📸 Caméra</button>
-        <button class="neu-btn" onclick="triggerGallery()">📁 Galerie</button>
+    <!-- PAGE PROFIL AGENT -->
+    <div id="page-profil" class="page">
+      <div class="page-title">Profil Agent</div>
+
+      <div class="profile-card">
+        <div class="profile-avatar">V</div>
+        <h3 style="margin-bottom: 4px;">Venunye</h3>
+        <span class="agent-badge">Agent VENUN Agréé</span>
+
+        <div class="profile-details-list">
+          <div class="profile-item">
+            <span class="label">Terminal ID</span>
+            <span class="value">AG-9912-TG</span>
+          </div>
+          <div class="profile-item">
+            <span class="label">Appareil POS</span>
+            <span class="value">Google Pixel</span>
+          </div>
+          <div class="profile-item">
+            <span class="label">Localisation</span>
+            <span class="value">Lomé, Togo</span>
+          </div>
+          <div class="profile-item">
+            <span class="label">Taux Commission</span>
+            <span class="value" style="color: var(--warning-amber);">1% par Opération</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="settings-card">
+        <div class="settings-title">
+          <span>⚙️</span> Thème de l'Application
+        </div>
+        <div class="theme-toggle-grid">
+          <button id="btn-theme-dark" class="theme-btn active" onclick="setTheme('dark')">
+            🌙 Sombre
+          </button>
+          <button id="btn-theme-light" class="theme-btn" onclick="setTheme('light')">
+            ☀️ Clair
+          </button>
+        </div>
+      </div>
+
+      <button class="btn-submit" style="background: rgba(255, 61, 113, 0.15); color: var(--danger-red); border: 1px solid rgba(255, 61, 113, 0.3);" onclick="showToast('Déconnexion...')">
+        Fermer la caisse (Déconnexion)
+      </button>
     </div>
 
-    <div class="actions-grid" style="margin-top: -8px;">
-        <button class="neu-btn" style="color: var(--purple-accent); grid-column: span 2;" onclick="generateTestImage()">🎨 Test Image</button>
+  </div>
+
+  <!-- BARRE DE NAVIGATION FLOTTANTE -->
+  <div class="floating-navbar">
+    <div class="nav-btn active" onclick="switchTab('accueil', this)">
+      <span class="nav-btn-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+          <polyline points="9 22 9 12 15 12 15 22"></polyline>
+        </svg>
+      </span>
+      <span class="nav-text">Caisse</span>
     </div>
 
-    <input type="file" id="gallery-input" accept="image/*" onchange="handleImageUpload(event)">
-
-    <div class="result-box">
-        <div class="result-label">ID Détecté (Série AA)</div>
-        <div class="result-value" id="card-id-result">EN ATTENTE...</div>
+    <div class="nav-btn" onclick="switchTab('scanner', this)">
+      <span class="nav-btn-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+          <line x1="9" y1="3" x2="9" y2="21"></line>
+          <line x1="15" y1="3" x2="15" y2="21"></line>
+          <line x1="3" y1="9" x2="21" y2="9"></line>
+          <line x1="3" y1="15" x2="21" y2="15"></line>
+        </svg>
+      </span>
+      <span class="nav-text">Scan Matrice</span>
     </div>
+
+    <div class="nav-btn" onclick="switchTab('profil', this)">
+      <span class="nav-btn-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+          <circle cx="12" cy="7" r="4"></circle>
+        </svg>
+      </span>
+      <span class="nav-text">Profil</span>
+    </div>
+  </div>
+</div>
+
+<!-- CANVAS MASQUÉ POUR L'ANALYSE D'IMAGE DES PIXELS -->
+<canvas id="snapshot" style="display: none;"></canvas>
+
+<!-- MODALES AGENT -->
+
+<!-- Modal Dépôt Client -->
+<div id="modal-depot" class="modal-overlay">
+  <div class="modal-card">
+    <div class="modal-header">
+      <span class="modal-title">Dépôt sur compte Client</span>
+      <button class="modal-close" onclick="closeModal('modal-depot')">✕</button>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Identifiant Client (Tel ou Matrice)</label>
+      <input type="text" id="depot-client-id" class="form-input" placeholder="Ex: VN-XXXX ou +228...">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Montant à déposer (FCFA)</label>
+      <input type="number" class="form-input" placeholder="Ex: 5000">
+    </div>
+    <button class="btn-submit" onclick="submitTransaction('Dépôt validé ! Commission ajoutée.')">Valider le Dépôt</button>
+  </div>
+</div>
+
+<!-- Modal Retrait Client -->
+<div id="modal-retrait" class="modal-overlay">
+  <div class="modal-card">
+    <div class="modal-header">
+      <span class="modal-title">Retrait depuis compte Client</span>
+      <button class="modal-close" onclick="closeModal('modal-retrait')">✕</button>
+    </div>
+    <div class="form-group">
+      <label class="form-label">ID Matrice du Client</label>
+      <input type="text" id="retrait-client-id" class="form-input" placeholder="Scanner la carte pour remplir">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Montant à retirer (FCFA)</label>
+      <input type="number" class="form-input" placeholder="Ex: 10000">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Code PIN Secret Client</label>
+      <input type="password" class="form-input" placeholder="Le client tape son code ici">
+    </div>
+    <button class="btn-submit" style="background: var(--danger-red); color: #fff;" onclick="submitTransaction('Retrait validé ! Caisse approvisionnée.')">Autoriser le Retrait</button>
+  </div>
+</div>
+
+<!-- Modal Float -->
+<div id="modal-float" class="modal-overlay">
+  <div class="modal-card">
+    <div class="modal-header">
+      <span class="modal-title">Réapprovisionner la Caisse</span>
+      <button class="modal-close" onclick="closeModal('modal-float')">✕</button>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Source du Float</label>
+      <select class="form-select">
+        <option>Banque Principale</option>
+        <option>Super-Agent VENUN</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Montant (FCFA)</label>
+      <input type="number" class="form-input" placeholder="Ex: 500000">
+    </div>
+    <button class="btn-submit" style="background: var(--accent-blue); color: #fff;" onclick="submitTransaction('Demande de réapprovisionnement envoyée !')">Demander du Float</button>
+  </div>
 </div>
 
 <script>
-    const video = document.getElementById('video-element');
-    const canvas = document.getElementById('debug-canvas');
+  let isBalanceHidden = false;
+  const rawBalance = "850 000";
+  const rawCommission = "4 250";
+  let lastDecodedId = "#VN-77X-91";
+
+  // 1. DÉMARRAGE ET INITIALISATION DU SCANNER
+  const grid = document.getElementById('grid');
+  for (let i = 0; i < 100; i++) {
+    const cell = document.createElement('div');
+    cell.className = 'grid-cell';
+    grid.appendChild(cell);
+  }
+
+  const videoElement = document.getElementById('camera');
+  let isCameraActive = false;
+
+  async function startCamera() {
+    if (isCameraActive) return;
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({
+        video: { facingMode: 'environment' }
+      });
+      videoElement.srcObject = stream;
+      isCameraActive = true;
+    } catch (err) {
+      console.error("Erreur caméra : ", err);
+      document.getElementById('scanStatusText').innerText = "Impossible d'accéder à la caméra";
+    }
+  }
+
+  // Démarrer la caméra au chargement
+  startCamera();
+
+  // 2. LOGIQUE RÉELLE DE DECODAGE ET D'ANALYSE D'IMAGE
+  function triggerScan() {
+    if (!videoElement.videoWidth) {
+      showToast("La caméra s'initialise...");
+      return;
+    }
+
+    const btn = document.getElementById('btn-scan-trigger');
+    const laser = document.getElementById('scannerLaser');
+    const statusText = document.getElementById('scanStatusText');
+    const resultBox = document.getElementById('scanResult');
+    const cells = document.querySelectorAll('.grid-cell');
+    const canvas = document.getElementById('snapshot');
     const ctx = canvas.getContext('2d', { willReadFrequently: true });
-    const resultDisplay = document.getElementById('card-id-result');
-    const viewport = document.getElementById('viewport');
+
+    // Réinitialiser les animations et grilles
+    resultBox.classList.remove('active');
+    cells.forEach(c => c.classList.remove('active'));
+    laser.style.display = 'block';
+    btn.textContent = "Analyse des pixels en cours...";
+    statusText.innerText = "Lecture de la matrice 10x10...";
+    statusText.style.color = "var(--accent-green)";
+
+    // Découpage carré parfait au centre du flux vidéo
+    const size = Math.min(videoElement.videoWidth, videoElement.videoHeight);
+    const startX = (videoElement.videoWidth - size) / 2;
+    const startY = (videoElement.videoHeight - size) / 2;
+
+    canvas.width = size;
+    canvas.height = size;
+
+    // Capture de l'image sur le Canvas
+    ctx.drawImage(videoElement, startX, startY, size, size, 0, 0, size, size);
+
+    // Analyse des 100 cases de la grille
+    const cellWidth = Math.floor(size / 10);
+    const cellHeight = Math.floor(size / 10);
+    let activeCellsCount = 0;
+
+    for (let row = 0; row < 10; row++) {
+      for (let col = 0; col < 10; col++) {
+        const imgData = ctx.getImageData(col * cellWidth, row * cellHeight, cellWidth, cellHeight);
+        const pixels = imgData.data;
+        let totalBrightness = 0;
+
+        for (let i = 0; i < pixels.length; i += 4) {
+          totalBrightness += (pixels[i] + pixels[i+1] + pixels[i+2]) / 3;
+        }
+
+        const avgBrightness = totalBrightness / (pixels.length / 4);
+
+        // Seuil de détection des zones sombres (motifs/points)
+        if (avgBrightness < 100) {
+          const cellIndex = (row * 10) + col;
+          cells[cellIndex].classList.add('active');
+          activeCellsCount++;
+        }
+      }
+    }
+
+    // Traitement du résultat
+    setTimeout(() => {
+      laser.style.display = 'none';
+      btn.textContent = "Décoder la Carte Matrice";
+      
+      // Générer ou afficher un ID relatif à la matrice lue
+      lastDecodedId = "#VN-" + (activeCellsCount * 17 + 101) + "X";
+      document.getElementById('detectedMatrixId').innerText = lastDecodedId;
+
+      statusText.innerText = `Matrice décodée (${activeCellsCount} cases identifiées)`;
+      resultBox.classList.add('active');
+      showToast("Matrice lue avec succès !");
+    }, 1200);
+  }
+
+  // Auto-remplir la modale avec le client scanné
+  function openModalWithClient(modalId) {
+    if (modalId === 'modal-depot') {
+      document.getElementById('depot-client-id').value = lastDecodedId;
+    } else if (modalId === 'modal-retrait') {
+      document.getElementById('retrait-client-id').value = lastDecodedId;
+    }
+    openModal(modalId);
+  }
+
+  /* GESTION THÈME */
+  function setTheme(themeMode) {
+    const btnDark = document.getElementById('btn-theme-dark');
+    const btnLight = document.getElementById('btn-theme-light');
+
+    if (themeMode === 'light') {
+      document.documentElement.setAttribute('data-theme', 'light');
+      btnLight.classList.add('active');
+      btnDark.classList.remove('active');
+      showToast("Mode Clair activé");
+    } else {
+      document.documentElement.removeAttribute('data-theme');
+      btnDark.classList.add('active');
+      btnLight.classList.remove('active');
+      showToast("Mode Sombre activé");
+    }
+  }
+
+  /* AFFICHAGE / MASQUAGE DU SOLDE */
+  function toggleBalance() {
+    isBalanceHidden = !isBalanceHidden;
+    const valElem = document.getElementById('balance-value');
+    const commElem = document.getElementById('commission-value');
+
+    if (isBalanceHidden) {
+      valElem.innerText = "••••••";
+      commElem.innerText = "••••";
+    } else {
+      valElem.innerText = rawBalance;
+      commElem.innerText = rawCommission;
+    }
+  }
+
+  /* TOAST NOTIFICATION */
+  function showToast(message) {
+    const toast = document.getElementById('toast');
+    const msgElem = document.getElementById('toast-message');
+    msgElem.innerText = message;
+    toast.classList.add('show');
     
-    let isScanningLive = false;
-    let animationFrameId = null;
-    let isTestMode = false;
+    setTimeout(() => {
+      toast.classList.remove('show');
+    }, 2800);
+  }
 
-    function triggerGallery() {
-        stopCamera();
-        document.getElementById('gallery-input').click();
+  /* MODALES */
+  function openModal(id) {
+    document.getElementById(id).classList.add('active');
+  }
+
+  function closeModal(id) {
+    document.getElementById(id).classList.remove('active');
+  }
+
+  function submitTransaction(successMsg) {
+    const activeModal = document.querySelector('.modal-overlay.active');
+    if (activeModal) activeModal.classList.remove('active');
+    showToast(successMsg);
+  }
+
+  /* FILTRES HISTORIQUE */
+  function filterTransactions(type, btnElement) {
+    document.querySelectorAll('.filter-chip').forEach(chip => chip.classList.remove('active'));
+    btnElement.classList.add('active');
+
+    const coupons = document.querySelectorAll('.coupon-card');
+    coupons.forEach(coupon => {
+      if (type === 'all' || coupon.getAttribute('data-type') === type) {
+        coupon.style.display = 'block';
+      } else {
+        coupon.style.display = 'none';
+      }
+    });
+  }
+
+  /* NAVIGATION TAB */
+  function switchTab(pageId, element) {
+    document.querySelectorAll('.page').forEach(page => page.classList.remove('active'));
+    document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
+
+    document.getElementById(`page-${pageId}`).classList.add('active');
+    element.classList.add('active');
+
+    // Relancer la caméra si on bascule sur l'onglet Scanner
+    if (pageId === 'scanner') {
+      startCamera();
     }
-
-    async function startCamera() {
-        stopCamera();
-        isTestMode = false;
-        try {
-            const stream = await navigator.mediaDevices.getUserMedia({
-                video: { facingMode: { exact: "environment" } }
-            }).catch(() => navigator.mediaDevices.getUserMedia({ video: true }));
-
-            video.srcObject = stream;
-            await video.play();
-            
-            // Ajuster la taille interne du canvas à la résolution vidéo
-            canvas.width = video.videoWidth;
-            canvas.height = video.videoHeight;
-            
-            isScanningLive = true;
-            requestAnimationFrame(processLiveCamera);
-        } catch (err) {
-            alert("Impossible d'accéder à la caméra : " + err.message);
-        }
-    }
-
-    function stopCamera() {
-        isScanningLive = false;
-        if (animationFrameId) cancelAnimationFrame(animationFrameId);
-        if (video.srcObject) {
-            video.srcObject.getTracks().forEach(track => track.stop());
-            video.srcObject = null;
-        }
-    }
-
-    function isPurpleHSV(r, g, b) {
-        r /= 255; g /= 255; b /= 255;
-        const max = Math.max(r, g, b), min = Math.min(r, g, b);
-        const d = max - min;
-        if (max === min || d === 0) return false;
-
-        let h;
-        if (max === r) h = (g - b) / d + (g < b ? 6 : 0);
-        else if (max === g) h = (b - r) / d + 2;
-        else if (max === b) h = (r - g) / d + 4;
-        h /= 6;
-
-        const hueDegrees = h * 360;
-        const saturation = max === 0 ? 0 : d / max;
-        // Ajustement mineur de la saturation pour être plus tolérant avec l'éclairage de la caméra
-        return (hueDegrees >= 240 && hueDegrees <= 330 && saturation > 0.15);
-    }
-
-    function processLiveCamera() {
-        if (!isScanningLive) return;
-
-        if (video.readyState === video.HAVE_ENOUGH_DATA) {
-            // S'assurer que le canvas a la bonne taille
-            if (canvas.width !== video.videoWidth || canvas.height !== video.videoHeight) {
-                canvas.width = video.videoWidth;
-                canvas.height = video.videoHeight;
-            }
-            
-            ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-            analyzeSquareRegion();
-        }
-
-        animationFrameId = requestAnimationFrame(processLiveCamera);
-    }
-
-    function handleImageUpload(event) {
-        isTestMode = true;
-        const file = event.target.files[0];
-        if (file) {
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                const img = new Image();
-                img.src = e.target.result;
-                img.onload = () => {
-                    canvas.width = img.width;
-                    canvas.height = img.height;
-                    ctx.drawImage(img, 0, 0);
-                    analyzeSquareRegion();
-                };
-            };
-            reader.readAsDataURL(file);
-        }
-    }
-
-    function generateTestImage() {
-        stopCamera();
-        isTestMode = true;
-        
-        // Créer une image de test parfaitement carrée
-        canvas.width = 400;
-        canvas.height = 400;
-        
-        ctx.fillStyle = "#FFFFFF";
-        ctx.fillRect(0, 0, 400, 400);
-
-        const targetID = [2, 3, 7, 5, 5, 0, 9, 4, 6, 5];
-        const step = 400 / 10;
-
-        for (let row = 0; row < 10; row++) {
-            for (let col = 0; col < 10; col++) {
-                const x = col * step + step / 2;
-                const y = row * step + step / 2;
-                ctx.beginPath();
-                ctx.arc(x, y, 8, 0, Math.PI * 2);
-                ctx.fillStyle = (col === targetID[row]) ? "#8b5cf6" : "#9ca3af";
-                ctx.fill();
-            }
-        }
-        
-        analyzeSquareRegion();
-    }
-
-    // NOUVELLE FONCTION : Analyse uniquement un carré parfait au centre de l'image
-    function analyzeSquareRegion() {
-        const w = canvas.width;
-        const h = canvas.height;
-        if (w === 0 || h === 0) return;
-
-        // 1. Définir le carré d'analyse (Region of Interest)
-        // Prendre la plus petite dimension pour faire un carré parfait
-        let size = Math.min(w, h);
-        
-        // En mode caméra, on réduit un peu le carré (ex: 80% de la taille dispo) 
-        // pour laisser une marge et aider l'utilisateur à viser
-        if (!isTestMode) {
-            size = size * 0.8; 
-        }
-
-        // Calculer les coordonnées du coin supérieur gauche pour centrer le carré
-        const startX = (w - size) / 2;
-        const startY = (h - size) / 2;
-
-        // Dessiner le cadre de visée
-        ctx.strokeStyle = "#EF4444"; // Rouge global
-        ctx.lineWidth = 4;
-        ctx.strokeRect(startX, startY, size, size);
-
-        // Assombrir l'extérieur du carré pour guider l'utilisateur
-        if (!isTestMode) {
-            ctx.fillStyle = "rgba(0, 0, 0, 0.5)";
-            ctx.fillRect(0, 0, w, startY); // Haut
-            ctx.fillRect(0, startY + size, w, h - (startY + size)); // Bas
-            ctx.fillRect(0, startY, startX, size); // Gauche
-            ctx.fillRect(startX + size, startY, w - (startX + size), size); // Droite
-        }
-
-        // 2. Extraire uniquement les données de ce carré
-        const imgData = ctx.getImageData(startX, startY, size, size);
-        const data = imgData.data;
-
-        // 3. Analyser la grille 10x10 à l'intérieur de ce carré
-        const cellWidth = size / 10;
-        const cellHeight = size / 10; // cellHeight = cellWidth puisque c'est un carré parfait
-        let detectedDigits = [];
-
-        for (let row = 0; row < 10; row++) {
-            let bestCol = 0;
-            let maxPurpleCount = -1;
-
-            for (let col = 0; col < 10; col++) {
-                // Coordonnées relatives au carré extrait
-                const cellStartX = Math.floor(col * cellWidth);
-                const cellStartY = Math.floor(row * cellHeight);
-
-                // Dessiner le quadrillage (coordonnées absolues sur le canvas principal)
-                ctx.strokeStyle = "rgba(59, 130, 246, 0.6)"; // Bleu
-                ctx.lineWidth = 1;
-                ctx.strokeRect(startX + cellStartX, startY + cellStartY, cellWidth, cellHeight);
-
-                let purplePixels = 0;
-                // Scanner la cellule
-                for (let y = cellStartY; y < cellStartY + cellHeight; y += 3) {
-                    for (let x = cellStartX; x < cellStartX + cellWidth; x += 3) {
-                        // Index dans le tableau de pixels (relatif au carré)
-                        const idx = (Math.floor(y) * Math.floor(size) + Math.floor(x)) * 4;
-                        if (isPurpleHSV(data[idx], data[idx+1], data[idx+2])) {
-                            purplePixels++;
-                        }
-                    }
-                }
-
-                if (purplePixels > maxPurpleCount) {
-                    maxPurpleCount = purplePixels;
-                    bestCol = col;
-                }
-            }
-            detectedDigits.push(bestCol);
-        }
-
-        resultDisplay.innerText = `AA-${detectedDigits.join('')}`;
-    }
+  }
 </script>
-
 </body>
-</html>
+    </html>
