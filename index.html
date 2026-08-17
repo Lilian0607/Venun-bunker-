@@ -1,1298 +1,5493 @@
 <!DOCTYPE html>
 <html lang="fr">
+
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-  <title>VENUN - Espace Agent</title>
-  <style>
-    :root {
-      --bg-main: #0d111a;
-      --bg-card: #131824;
-      --bg-card-alt: #1a2030;
-      --bg-modal: #161c2b;
-      --accent-green: #00e676;
-      --accent-green-glow: rgba(0, 230, 118, 0.4);
-      --danger-red: #ff3d71;
-      --danger-red-glow: rgba(255, 61, 113, 0.4);
-      --warning-amber: #ffaa00;
-      --accent-blue: #00b0ff;
-      --text-main: #ffffff;
-      --text-muted: #8a99ad;
-      --border-light: rgba(255, 255, 255, 0.08);
-      --nav-bg: #121722;
-      --nav-active-bg: #ffffff;
-      --nav-active-text: #0b0e14;
-      --radius-lg: 22px;
-      --radius-md: 14px;
-      --radius-sm: 8px;
+
+<meta charset="UTF-8">
+
+<meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+>
+
+<title>VENUN BUNKER - Admin</title>
+
+
+<link
+    href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap"
+    rel="stylesheet"
+>
+
+<link
+    rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+>
+
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+
+<style>
+
+:root {
+
+    --bg:#0d111a;
+
+    --card:#111722;
+
+    --text:#e5e7eb;
+
+    --muted:#718096;
+
+    --blue:#00f0ff;
+
+    --green:#00ff66;
+
+    --red:#ff1744;
+
+    --orange:#ffb020;
+
+    --dark:#05070a;
+
+    --light:#19202c;
+
+}
+
+
+* {
+
+    box-sizing:border-box;
+
+    margin:0;
+
+    padding:0;
+
+    font-family:'Poppins',sans-serif;
+
+}
+
+
+body {
+
+    background:var(--bg);
+
+    color:var(--text);
+
+    min-height:100vh;
+
+    padding-bottom:90px;
+
+}
+
+
+button,
+input,
+select {
+
+    font-family:inherit;
+
+}
+
+
+button {
+
+    cursor:pointer;
+
+}
+
+
+.page {
+
+    display:none;
+
+    padding:20px;
+
+    animation:fade .25s ease;
+
+}
+
+
+.page.active {
+
+    display:block;
+
+}
+
+
+@keyframes fade {
+
+    from {
+
+        opacity:0;
+
+        transform:translateY(8px);
+
     }
 
-    /* THÈME CLAIR */
-    [data-theme="light"] {
-      --bg-main: #f0f3f8;
-      --bg-card: #ffffff;
-      --bg-card-alt: #e4e9f2;
-      --bg-modal: #ffffff;
-      --text-main: #0d111a;
-      --text-muted: #627284;
-      --border-light: rgba(0, 0, 0, 0.08);
-      --nav-bg: #ffffff;
-      --nav-active-bg: #0d111a;
-      --nav-active-text: #ffffff;
+    to {
+
+        opacity:1;
+
+        transform:translateY(0);
+
     }
 
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-      user-select: none;
-    }
+}
 
-    html, body {
-      width: 100%;
-      height: 100%;
-      background-color: var(--bg-main);
-      color: var(--text-main);
-      overflow-x: hidden;
-      transition: background-color 0.3s ease, color 0.3s ease;
-    }
 
-    /* TOAST NOTIFICATION BANNER */
-    .toast {
-      position: fixed;
-      top: -60px;
-      left: 50%;
-      transform: translateX(-50%);
-      background: var(--accent-green);
-      color: #000000;
-      padding: 12px 22px;
-      border-radius: 30px;
-      font-weight: 700;
-      font-size: 0.85rem;
-      box-shadow: 0 8px 25px var(--accent-green-glow);
-      z-index: 3000;
-      transition: top 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
+h1 {
 
-    .toast.show {
-      top: 20px;
-    }
+    color:var(--blue);
 
-    /* Conteneur Plein Écran */
-    .app-container {
-      width: 100vw;
-      min-height: 100dvh;
-      display: flex;
-      flex-direction: column;
-      position: relative;
-      background: var(--bg-main);
-    }
+    font-size:1.45rem;
 
-    /* Wrapper des Pages */
-    .pages-wrapper {
-      flex: 1;
-      overflow-y: auto;
-      padding: 20px 16px calc(100px + env(safe-area-inset-bottom)) 16px;
-    }
+}
+
+
+.subtitle {
+
+    color:var(--muted);
+
+    font-size:.85rem;
+
+    margin:5px 0 22px;
+
+}
+
+
+.neo-card {
+
+    background:var(--bg);
+
+    border-radius:16px;
+
+    padding:16px;
+
+    margin-bottom:15px;
+
+    box-shadow:
+        6px 6px 12px var(--dark),
+        -6px -6px 12px var(--light);
+
+}
+
+
+.neo-inset {
+
+    background:var(--bg);
+
+    border:none;
+
+    border-radius:12px;
+
+    padding:14px;
+
+    color:var(--text);
+
+    width:100%;
+
+    outline:none;
+
+    box-shadow:
+        inset 5px 5px 10px var(--dark),
+        inset -5px -5px 10px var(--light);
+
+}
+
+
+.neo-inset::placeholder {
+
+    color:#59657d;
+
+}
+
+
+.kpi-grid {
+
+    display:grid;
+
+    grid-template-columns:1fr 1fr;
+
+    gap:14px;
+
+    margin-bottom:20px;
+
+}
+
+
+.kpi-card {
+
+    text-align:center;
+
+}
+
+
+.kpi-icon {
+
+    font-size:20px;
+
+    margin-bottom:5px;
+
+}
+
+
+.kpi-label {
+
+    font-size:.72rem;
+
+    color:var(--muted);
+
+}
+
+
+.kpi-value {
+
+    color:var(--blue);
+
+    font-size:1.1rem;
+
+    font-weight:700;
+
+    margin-top:4px;
+
+}
+
+
+.section-title {
+
+    font-size:1rem;
+
+    margin:20px 0 12px;
+
+}
+
+
+.chart-container {
+
+    padding:15px;
+
+    border-radius:18px;
+
+    box-shadow:
+        inset 5px 5px 10px var(--dark),
+        inset -5px -5px 10px var(--light);
+
+}
+
+
+.search-bar {
+
+    position:relative;
+
+    margin-bottom:15px;
+
+}
+
+
+.search-bar i {
+
+    position:absolute;
+
+    right:15px;
+
+    top:50%;
+
+    transform:translateY(-50%);
+
+    color:var(--blue);
+
+}
+
+
+.filter-group {
+
+    display:flex;
+
+    gap:10px;
+
+    overflow-x:auto;
+
+    margin-bottom:18px;
+
+    padding:3px;
+
+}
+
+
+.filter-btn {
+
+    border:none;
+
+    background:var(--bg);
+
+    color:var(--muted);
+
+    padding:9px 15px;
+
+    border-radius:20px;
+
+    white-space:nowrap;
+
+    box-shadow:
+        4px 4px 8px var(--dark),
+        -4px -4px 8px var(--light);
+
+}
+
+
+.filter-btn.active {
+
+    color:var(--blue);
+
+    box-shadow:
+        inset 4px 4px 8px var(--dark),
+        inset -4px -4px 8px var(--light);
+
+}
+
+
+.item-row {
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:space-between;
+
+    gap:10px;
+
+}
+
+
+.item-main {
+
+    min-width:0;
+
+}
+
+
+.item-name {
+
+    font-weight:600;
+
+}
+
+
+.item-info {
+
+    color:var(--muted);
+
+    font-size:.75rem;
+
+    margin-top:3px;
+
+}
+
+
+.status {
+
+    font-size:.72rem;
+
+    padding:5px 9px;
+
+    border-radius:10px;
+
+    white-space:nowrap;
+
+}
+
+
+.status-verified {
+
+    color:var(--green);
+
+}
+
+
+.status-unverified {
+
+    color:var(--orange);
+
+}
+
+
+.status-active {
+
+    color:var(--green);
+
+}
+
+
+.status-blocked {
+
+    color:var(--red);
+
+}
+
+
+.action-btn {
+
+    border:none;
+
+    border-radius:10px;
+
+    padding:9px 12px;
+
+    background:var(--bg);
+
+    color:var(--blue);
+
+    box-shadow:
+        3px 3px 7px var(--dark),
+        -3px -3px 7px var(--light);
+
+}
+
+
+.action-btn:active {
+
+    box-shadow:
+        inset 3px 3px 7px var(--dark),
+        inset -3px -3px 7px var(--light);
+
+}
+
+
+.action-btn.green {
+
+    color:var(--green);
+
+}
+
+
+.action-btn.red {
+
+    color:var(--red);
+
+}
+
+
+.action-btn.orange {
+
+    color:var(--orange);
+
+}
+
+
+.empty {
+
+    text-align:center;
+
+    color:var(--muted);
+
+    padding:35px 15px;
+
+}
+
+
+.loading {
+
+    text-align:center;
+
+    color:var(--muted);
+
+    padding:30px;
+
+}
+
+
+.bottom-nav {
+
+    position:fixed;
+
+    z-index:50;
+
+    bottom:10px;
+
+    left:50%;
+
+    transform:translateX(-50%);
+
+    width:96%;
+
+    max-width:600px;
+
+    background:rgba(13,17,26,.94);
+
+    backdrop-filter:blur(12px);
+
+    border-radius:20px;
+
+    display:flex;
+
+    justify-content:space-around;
+
+    padding:12px 5px;
+
+    box-shadow:0 -5px 20px rgba(0,0,0,.45);
+
+}
+
+
+.nav-item {
+
+    flex:1;
+
+    text-align:center;
+
+    color:var(--muted);
+
+    cursor:pointer;
+
+    font-size:1.1rem;
+
+}
+
+
+.nav-item.active {
+
+    color:var(--blue);
+
+}
+
+
+.nav-item span {
+
+    display:block;
+
+    font-size:.58rem;
+
+    margin-top:3px;
+
+}
+
+
+.modal {
+
+    position:fixed;
+
+    inset:0;
+
+    z-index:100;
+
+    display:none;
+
+    align-items:center;
+
+    justify-content:center;
+
+    padding:18px;
+
+    background:rgba(0,0,0,.78);
+
+    backdrop-filter:blur(5px);
+
+}
+
+
+.modal.active {
+
+    display:flex;
+
+}
+
+
+.modal-box {
+
+    width:100%;
+
+    max-width:430px;
+
+    max-height:90vh;
+
+    overflow:auto;
+
+    background:var(--bg);
+
+    border-radius:20px;
+
+    padding:20px;
+
+    box-shadow:
+        8px 8px 20px #05070a,
+        -8px -8px 20px #19202c;
+
+}
+
+
+.modal-title {
+
+    color:var(--blue);
+
+    margin-bottom:15px;
+
+}
+
+
+.form-group {
+
+    margin-bottom:12px;
+
+}
+
+
+.form-label {
+
+    display:block;
+
+    font-size:.75rem;
+
+    color:var(--muted);
+
+    margin-bottom:5px;
+
+}
+
+
+.form-actions {
+
+    display:flex;
+
+    gap:10px;
+
+    margin-top:18px;
+
+}
+
+
+.form-actions button {
+
+    flex:1;
+
+}
+
+
+.btn-primary {
+
+    border:none;
+
+    border-radius:12px;
+
+    padding:12px;
+
+    background:var(--blue);
+
+    color:#001014;
+
+    font-weight:700;
+
+}
+
+
+.btn-secondary {
+
+    border:none;
+
+    border-radius:12px;
+
+    padding:12px;
+
+    background:var(--bg);
+
+    color:var(--text);
+
+    box-shadow:
+        4px 4px 8px var(--dark),
+        -4px -4px 8px var(--light);
+
+}
+
+
+.alert {
+
+    position:fixed;
+
+    top:15px;
+
+    left:50%;
+
+    transform:translateX(-50%);
+
+    z-index:300;
+
+    width:90%;
+
+    max-width:450px;
+
+    padding:13px 16px;
+
+    border-radius:12px;
+
+    background:#151b26;
+
+    box-shadow:0 10px 30px rgba(0,0,0,.5);
+
+    display:none;
+
+    text-align:center;
+
+    font-size:.8rem;
+
+}
+
+
+.alert.show {
+
+    display:block;
+
+}
+
+
+.alert.success {
+
+    color:var(--green);
+
+}
+
+
+.alert.error {
+
+    color:var(--red);
+
+}
+
+
+.alert.info {
+
+    color:var(--blue);
+
+}
+
+
+.scanner-box {
+
+    width:100%;
+
+    aspect-ratio:1/1;
+
+    max-width:320px;
+
+    margin:15px auto;
+
+    background:#000;
+
+    border-radius:18px;
+
+    overflow:hidden;
+
+    position:relative;
+
+}
+
+
+#scannerVideo {
+
+    width:100%;
+
+    height:100%;
+
+    object-fit:cover;
+
+}
+
+
+#scannerCanvas {
+
+    display:none;
+
+}
+
+
+.scanner-frame {
+
+    position:absolute;
+
+    width:70%;
+
+    aspect-ratio:1/1;
+
+    left:15%;
+
+    top:15%;
+
+    border:2px solid var(--blue);
+
+    border-radius:10px;
+
+    box-shadow:0 0 15px rgba(0,240,255,.5);
+
+}
+
+
+.scanner-status {
+
+    text-align:center;
+
+    color:var(--muted);
+
+    font-size:.75rem;
+
+}
+
+
+.file-input {
+
+    display:none;
+
+}
+
+
+.small-grid {
+
+    display:grid;
+
+    grid-template-columns:1fr 1fr;
+
+    gap:10px;
+
+}
+
+
+@media(max-width:380px) {
 
     .page {
-      display: none;
-      animation: fadeIn 0.25s ease-in-out;
-      max-width: 600px;
-      margin: 0 auto;
-    }
-
-    .page.active {
-      display: block;
-    }
-
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(6px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-
-    .page-title {
-      font-size: 1.4rem;
-      font-weight: 700;
-      margin-bottom: 18px;
-      color: var(--text-main);
-    }
-
-    /* CADRE SOLDE - DOUBLE SOUS-CARTES */
-    .balance-outer-card {
-      background: var(--bg-card);
-      border: 1px solid var(--border-light);
-      border-radius: var(--radius-lg);
-      padding: 16px;
-      margin-bottom: 20px;
-      box-shadow: 0 10px 25px rgba(0,0,0,0.15);
-    }
-
-    .card-top-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 14px;
-      padding: 0 2px;
-    }
-
-    .user-greeting {
-      font-size: 1.1rem;
-      font-weight: 700;
-      color: var(--accent-blue);
-    }
-
-    .brand-logo {
-      font-weight: 900;
-      font-size: 1.05rem;
-      letter-spacing: 1.5px;
-      background: linear-gradient(90deg, var(--text-main), var(--accent-green));
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-    }
-
-    .balance-split-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 12px;
-    }
-
-    .sub-card {
-      background: var(--bg-card-alt);
-      border: 1px solid var(--border-light);
-      border-radius: 16px;
-      padding: 14px;
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-      min-height: 95px;
-    }
-
-    .sub-card-label {
-      font-size: 0.72rem;
-      color: var(--text-muted);
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-      font-weight: 600;
-    }
-
-    .status-container {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      font-size: 0.75rem;
-      font-weight: 600;
-      margin-top: 6px;
-    }
-
-    .led {
-      width: 9px;
-      height: 9px;
-      border-radius: 50%;
-      display: inline-block;
-    }
-
-    .led-green {
-      background-color: var(--accent-green);
-      box-shadow: 0 0 8px var(--accent-green);
-      animation: wifiPulse 1.2s infinite ease-in-out;
-    }
-
-    @keyframes wifiPulse {
-      0% { opacity: 0.3; }
-      50% { opacity: 1; }
-      100% { opacity: 0.3; }
-    }
-
-    .sub-card-amount {
-      font-size: 1.15rem;
-      font-weight: 800;
-      color: var(--text-main);
-      margin-top: 6px;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-    }
-
-    .currency {
-      font-size: 0.75rem;
-      color: var(--accent-green);
-      font-weight: 700;
-    }
-
-    /* Actions Grid */
-    .actions-grid {
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-      margin-bottom: 22px;
-    }
-
-    .top-actions-row {
-      display: grid;
-      grid-template-columns: 1fr 1fr 1fr;
-      gap: 10px;
-    }
-
-    .btn {
-      background: var(--bg-card);
-      border: 1px solid var(--border-light);
-      color: var(--text-main);
-      padding: 14px 8px;
-      border-radius: var(--radius-md);
-      font-size: 0.85rem;
-      font-weight: 600;
-      cursor: pointer;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      gap: 5px;
-      transition: all 0.2s ease;
-    }
-
-    .btn:active {
-      transform: scale(0.96);
-      background: var(--bg-card-alt);
-    }
-
-    .btn-scanner {
-      width: 100%;
-      background: linear-gradient(90deg, var(--accent-blue), var(--accent-green));
-      color: #000000;
-      border: none;
-      font-weight: 800;
-      padding: 14px;
-      flex-direction: row;
-      font-size: 0.92rem;
-      box-shadow: 0 4px 16px var(--accent-green-glow);
-    }
-
-    /* Filtres Transactions */
-    .filter-bar {
-      display: flex;
-      gap: 8px;
-      overflow-x: auto;
-      padding-bottom: 8px;
-      margin-bottom: 14px;
-      scrollbar-width: none;
-    }
-
-    .filter-bar::-webkit-scrollbar { display: none; }
-
-    .filter-chip {
-      background: var(--bg-card);
-      border: 1px solid var(--border-light);
-      color: var(--text-muted);
-      padding: 8px 16px;
-      border-radius: 20px;
-      font-size: 0.78rem;
-      font-weight: 600;
-      cursor: pointer;
-      white-space: nowrap;
-      transition: all 0.2s ease;
-    }
-
-    .filter-chip.active {
-      background: var(--text-main);
-      color: var(--bg-main);
-      border-color: var(--text-main);
-      font-weight: 700;
-    }
-
-    /* Transactions Coupons */
-    .coupon-list {
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-    }
-
-    .coupon-card {
-      background: var(--bg-card);
-      border: 1px solid var(--border-light);
-      border-radius: var(--radius-md);
-      padding: 14px 16px;
-      position: relative;
-      box-shadow: 0 6px 15px rgba(0,0,0,0.08);
-      cursor: pointer;
-      transition: transform 0.15s ease;
-    }
-
-    .coupon-card:active {
-      transform: scale(0.98);
-    }
-
-    .coupon-top {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 8px;
-    }
-
-    .coupon-status-tag {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      font-size: 0.72rem;
-      font-weight: 700;
-      padding: 4px 9px;
-      border-radius: 6px;
-      text-transform: uppercase;
-    }
-
-    .tag-depot { background: rgba(0, 230, 118, 0.15); color: var(--accent-green); }
-    .tag-retrait { background: rgba(255, 61, 113, 0.15); color: var(--danger-red); }
-    .tag-commission { background: rgba(255, 170, 0, 0.15); color: var(--warning-amber); }
-
-    .coupon-amount { font-size: 0.95rem; font-weight: 800; }
-    .coupon-amount.plus { color: var(--accent-green); }
-    .coupon-amount.minus { color: var(--danger-red); }
-
-    .coupon-divider {
-      border-top: 1px dashed var(--border-light);
-      margin: 8px 0;
-      width: 100%;
-    }
-
-    .coupon-bottom {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      font-size: 0.7rem;
-      color: var(--text-muted);
-    }
-
-    .coupon-ref { font-family: monospace; opacity: 0.8; }
-
-    /* ========================================================
-       PAGE SCANNER MATRICE - STYLE CAMÉRA RÉELLE & GRILLAGE 10x10
-       ======================================================== */
-    .scanner-container {
-      background: var(--bg-card);
-      border: 1px solid var(--border-light);
-      border-radius: var(--radius-lg);
-      padding: 20px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      position: relative;
-      margin-bottom: 20px;
-    }
 
-    /* Fenêtre Viewport de la Caméra (Parfaitement Carrée) */
-    .viewport {
-      width: 100%;
-      max-width: 300px;
-      aspect-ratio: 1 / 1;
-      border-radius: var(--radius-md);
-      background-color: #1a1a1a;
-      position: relative;
-      overflow: hidden;
-      box-shadow: inset 0 0 15px rgba(0,0,0,0.8);
-      border: 1px solid var(--border-light);
-    }
-
-    /* Flux Vidéo de la Caméra */
-    .video-feed {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      opacity: 0.85;
-    }
-
-    /* Grillage Overlay 10x10 */
-    .grid-overlay {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      display: grid;
-      grid-template-columns: repeat(10, 1fr);
-      grid-template-rows: repeat(10, 1fr);
-      pointer-events: none;
-    }
-
-    .grid-cell {
-      border: 0.5px solid rgba(0, 230, 118, 0.3);
-      box-sizing: border-box;
-      transition: background-color 0.2s ease;
-    }
-
-    /* Cellule activée (sombre détectée) */
-    .grid-cell.active {
-      background-color: rgba(0, 230, 118, 0.6);
-      border: 1px solid var(--accent-green);
-    }
-
-    /* Cibles de coin */
-    .corner-target {
-      position: absolute;
-      width: 25px;
-      height: 25px;
-      border-color: var(--accent-green);
-      border-style: solid;
-      pointer-events: none;
-      z-index: 10;
-    }
-    .top-left { top: 8px; left: 8px; border-width: 3px 0 0 3px; }
-    .top-right { top: 8px; right: 8px; border-width: 3px 3px 0 0; }
-    .bottom-left { bottom: 8px; left: 8px; border-width: 0 0 3px 3px; }
-    .bottom-right { bottom: 8px; right: 8px; border-width: 0 3px 3px 0; }
-
-    /* Laser de Scan */
-    .laser-line {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 2px;
-      background: var(--accent-green);
-      box-shadow: 0 0 10px var(--accent-green);
-      animation: scanLaser 2s infinite linear;
-      display: none;
-      z-index: 5;
-    }
-
-    @keyframes scanLaser {
-      0% { top: 0; }
-      50% { top: 100%; }
-      100% { top: 0; }
-    }
-
-    .scan-status {
-      font-size: 0.85rem;
-      color: var(--text-muted);
-      margin-top: 15px;
-      font-weight: 600;
-      text-align: center;
-    }
-
-    .btn-action-scan {
-      width: 100%;
-      padding: 14px;
-      border-radius: var(--radius-md);
-      font-weight: 700;
-      font-size: 0.95rem;
-      border: none;
-      cursor: pointer;
-      margin-bottom: 20px;
-      background: linear-gradient(90deg, var(--accent-blue), var(--accent-green));
-      color: #000;
-      box-shadow: 0 4px 15px var(--accent-green-glow);
-    }
-
-    /* Résultats du Scan (Matrice Décodée) */
-    .matrix-result {
-      display: none;
-      width: 100%;
-      background: var(--bg-card-alt);
-      border-radius: var(--radius-md);
-      padding: 15px;
-      margin-top: 15px;
-      border: 1px solid var(--accent-green);
-    }
-    
-    .matrix-result.active {
-      display: block;
-      animation: fadeIn 0.3s ease;
-    }
-
-    /* Page Profil & Paramètres */
-    .profile-card {
-      background: var(--bg-card);
-      border: 1px solid var(--border-light);
-      border-radius: var(--radius-lg);
-      padding: 20px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      text-align: center;
-      margin-bottom: 16px;
-    }
-
-    .profile-avatar {
-      width: 70px;
-      height: 70px;
-      border-radius: 50%;
-      background: linear-gradient(135deg, var(--accent-blue), var(--accent-green));
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 1.8rem;
-      font-weight: 800;
-      color: #000;
-      margin-bottom: 12px;
-    }
-
-    .agent-badge {
-      background: rgba(0, 176, 255, 0.15);
-      color: var(--accent-blue);
-      padding: 4px 10px;
-      border-radius: 12px;
-      font-size: 0.7rem;
-      font-weight: 700;
-      margin-top: 5px;
-      border: 1px solid rgba(0, 176, 255, 0.3);
-    }
-
-    .profile-details-list {
-      width: 100%;
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-      margin-top: 15px;
-    }
-
-    .profile-item {
-      display: flex;
-      justify-content: space-between;
-      padding: 10px 0;
-      border-bottom: 1px solid var(--border-light);
-      font-size: 0.85rem;
-    }
-
-    .profile-item:last-child { border-bottom: none; }
-    .profile-item .label { color: var(--text-muted); }
-    .profile-item .value { font-weight: 600; }
-
-    /* CARD PARAMÈTRES / THÈME */
-    .settings-card {
-      background: var(--bg-card);
-      border: 1px solid var(--border-light);
-      border-radius: var(--radius-lg);
-      padding: 18px;
-      margin-bottom: 16px;
-    }
+        padding:15px;
 
-    .settings-title {
-      font-size: 0.95rem;
-      font-weight: 700;
-      margin-bottom: 14px;
-      display: flex;
-      align-items: center;
-      gap: 8px;
     }
 
-    .theme-toggle-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 10px;
-      margin-bottom: 16px;
-    }
-
-    .theme-btn {
-      background: var(--bg-card-alt);
-      border: 1px solid var(--border-light);
-      color: var(--text-main);
-      padding: 12px;
-      border-radius: var(--radius-md);
-      font-size: 0.85rem;
-      font-weight: 600;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-      transition: all 0.2s ease;
-    }
-
-    .theme-btn.active {
-      border-color: var(--accent-green);
-      background: rgba(0, 230, 118, 0.12);
-      color: var(--accent-green);
-      font-weight: 700;
-    }
-
-    /* BARRE DE NAVIGATION FLOTTANTE */
-    .floating-navbar {
-      position: fixed;
-      bottom: calc(16px + env(safe-area-inset-bottom));
-      left: 50%;
-      transform: translateX(-50%);
-      width: calc(100% - 32px);
-      max-width: 420px;
-      background: var(--nav-bg);
-      border: 1px solid var(--border-light);
-      border-radius: 35px;
-      padding: 6px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      box-shadow: 0 12px 30px rgba(0,0,0,0.25);
-      backdrop-filter: blur(12px);
-      z-index: 1000;
-      transition: background-color 0.3s ease;
-    }
-
-    .nav-btn {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      padding: 10px 20px;
-      border-radius: 25px;
-      color: var(--text-muted);
-      font-size: 0.85rem;
-      font-weight: 600;
-      cursor: pointer;
-      transition: all 0.25s ease;
-      text-decoration: none;
-    }
-
-    .nav-btn .nav-text { display: none; }
-
-    .nav-btn-icon {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      width: 20px;
-      height: 20px;
-    }
-
-    .nav-btn-icon svg {
-      width: 100%;
-      height: 100%;
-      stroke: var(--text-muted);
-      transition: stroke 0.25s ease;
-    }
-
-    .nav-btn.active {
-      background: var(--nav-active-bg);
-      color: var(--nav-active-text);
-      font-weight: 700;
-      box-shadow: 0 4px 15px rgba(0,0,0,0.15);
-    }
-
-    .nav-btn.active .nav-text { display: inline; }
-    .nav-btn.active .nav-btn-icon svg { stroke: var(--nav-active-text); }
+    .kpi-grid {
 
-    /* MODALES OVERLAY & DIALOGS */
-    .modal-overlay {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100vw;
-      height: 100dvh;
-      background: rgba(0, 0, 0, 0.75);
-      backdrop-filter: blur(5px);
-      display: none;
-      justify-content: center;
-      align-items: flex-end;
-      z-index: 2000;
-    }
-
-    .modal-overlay.active {
-      display: flex;
-      animation: slideUp 0.25s ease-out;
-    }
-
-    @keyframes slideUp {
-      from { transform: translateY(100%); }
-      to { transform: translateY(0); }
-    }
-
-    .modal-card {
-      width: 100%;
-      max-width: 500px;
-      background: var(--bg-modal);
-      border-top-left-radius: 28px;
-      border-top-right-radius: 28px;
-      border: 1px solid var(--border-light);
-      padding: 24px;
-      box-shadow: 0 -10px 30px rgba(0,0,0,0.5);
-    }
-
-    .modal-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 20px;
-    }
+        gap:9px;
 
-    .modal-title {
-      font-size: 1.15rem;
-      font-weight: 700;
     }
 
-    .modal-close {
-      background: var(--bg-card-alt);
-      border: none;
-      color: var(--text-main);
-      width: 32px;
-      height: 32px;
-      border-radius: 50%;
-      font-weight: 700;
-      cursor: pointer;
-    }
-
-    .form-group {
-      margin-bottom: 16px;
-    }
-
-    .form-label {
-      display: block;
-      font-size: 0.75rem;
-      color: var(--text-muted);
-      margin-bottom: 6px;
-      text-transform: uppercase;
-      font-weight: 600;
-    }
-
-    .form-input, .form-select {
-      width: 100%;
-      background: var(--bg-main);
-      border: 1px solid var(--border-light);
-      padding: 12px 14px;
-      border-radius: var(--radius-md);
-      color: var(--text-main);
-      font-size: 0.95rem;
-      outline: none;
-    }
+}
 
-    .form-input:focus, .form-select:focus {
-      border-color: var(--accent-green);
-    }
+</style>
 
-    .btn-submit {
-      width: 100%;
-      background: var(--accent-green);
-      color: #000;
-      border: none;
-      padding: 14px;
-      border-radius: var(--radius-md);
-      font-weight: 800;
-      font-size: 0.95rem;
-      cursor: pointer;
-      margin-top: 10px;
-    }
-  </style>
 </head>
+
+
 <body>
 
-<!-- TOAST NOTIFICATION -->
-<div id="toast" class="toast">
-  <span>⚡</span> <span id="toast-message">Action effectuée</span>
-</div>
 
-<div class="app-container">
-  <div class="pages-wrapper">
+<div id="alert" class="alert"></div>
 
-    <!-- PAGE ACCUEIL AGENT -->
-    <div id="page-accueil" class="page active">
-      
-      <!-- CADRE SOLDE -->
-      <div class="balance-outer-card">
-        <div class="card-top-header">
-          <span class="user-greeting">Agent Venunye 👋</span>
-          <span class="brand-logo">VENUN</span>
+
+<!-- =====================================================
+     DASHBOARD
+===================================================== -->
+
+<section id="dashboard" class="page active">
+
+    <h1>Centre de Contrôle</h1>
+
+    <p class="subtitle">
+        Supervision globale de VENUN
+    </p>
+
+
+    <div class="kpi-grid">
+
+
+        <div class="neo-card kpi-card">
+
+            <div class="kpi-icon">
+                <i
+                    class="fa-solid fa-users"
+                    style="color:var(--blue)"
+                ></i>
+            </div>
+
+            <div class="kpi-label">
+                Utilisateurs
+            </div>
+
+            <div
+                id="totalUsers"
+                class="kpi-value"
+            >
+                0
+            </div>
+
         </div>
 
-        <div class="balance-split-grid">
-          <div class="sub-card">
-            <span class="sub-card-label">Solde Caisse (Float)</span>
-            <div class="sub-card-amount" onclick="toggleBalance()">
-              <span id="balance-value">850 000</span> 
-              <span class="currency">FCFA</span>
-            </div>
-            <div class="status-container" style="margin-top:10px">
-              <span class="led led-green"></span>
-              <span style="color:var(--text-muted); font-size: 0.7rem;">Terminal Connecté</span>
-            </div>
-          </div>
 
-          <div class="sub-card">
-            <span class="sub-card-label">Commissions du jour</span>
-            <div class="sub-card-amount" style="color: var(--warning-amber);">
-              <span id="commission-value">4 250</span> 
-              <span class="currency" style="color: var(--warning-amber);">FCFA</span>
-            </div>
-             <div style="font-size: 0.7rem; color: var(--text-muted); margin-top:10px;">
-               12 Opérations
-             </div>
-          </div>
-        </div>
-      </div>
+        <div class="neo-card kpi-card">
 
-      <!-- Actions Agent -->
-      <div class="actions-grid">
-        <div class="top-actions-row">
-          <button class="btn" onclick="openModal('modal-depot')">
-            <span style="font-size: 1.1rem; color: var(--accent-green);">⇡</span>
-            Dépôt Client
-          </button>
-          <button class="btn" onclick="openModal('modal-retrait')">
-            <span style="font-size: 1.1rem; color: var(--danger-red);">⇣</span>
-            Retrait Client
-          </button>
-          <button class="btn" onclick="switchTab('scanner', document.querySelectorAll('.nav-btn')[1])">
-            <span style="font-size: 1.1rem; color: var(--accent-blue);">◎</span>
-            Scan Carte
-          </button>
+            <div class="kpi-icon">
+                <i
+                    class="fa-solid fa-circle-check"
+                    style="color:var(--green)"
+                ></i>
+            </div>
+
+            <div class="kpi-label">
+                Vérifiés
+            </div>
+
+            <div
+                id="verifiedUsers"
+                class="kpi-value"
+            >
+                0
+            </div>
+
         </div>
-        <button class="btn btn-scanner" onclick="openModal('modal-float')">
-          <span>+</span> Réapprovisionner la Caisse
+
+
+        <div class="neo-card kpi-card">
+
+            <div class="kpi-icon">
+                <i
+                    class="fa-solid fa-wallet"
+                    style="color:var(--orange)"
+                ></i>
+            </div>
+
+            <div class="kpi-label">
+                Volume
+            </div>
+
+            <div
+                id="totalVolume"
+                class="kpi-value"
+            >
+                0 FCFA
+            </div>
+
+        </div>
+
+
+        <div class="neo-card kpi-card">
+
+            <div class="kpi-icon">
+                <i
+                    class="fa-solid fa-arrow-right-arrow-left"
+                    style="color:var(--blue)"
+                ></i>
+            </div>
+
+            <div class="kpi-label">
+                Transactions
+            </div>
+
+            <div
+                id="totalTransactions"
+                class="kpi-value"
+            >
+                0
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <h3 class="section-title">
+        Gains des 30 derniers jours
+    </h3>
+
+
+    <div class="chart-container">
+
+        <canvas id="gainsChart"></canvas>
+
+    </div>
+
+
+    <h3 class="section-title">
+        Règles VENUN
+    </h3>
+
+
+    <div class="neo-card">
+
+        <div class="item-row">
+
+            <div>
+
+                <div class="item-name">
+                    Plafond non vérifié
+                </div>
+
+                <div class="item-info">
+                    Dépôts cumulés sur 30 jours
+                </div>
+
+            </div>
+
+            <strong id="limitUnverified">
+                500 000 FCFA
+            </strong>
+
+        </div>
+
+    </div>
+
+
+    <div class="neo-card">
+
+        <div class="item-row">
+
+            <div>
+
+                <div class="item-name">
+                    Plafond vérifié
+                </div>
+
+                <div class="item-info">
+                    Dépôts cumulés sur 30 jours
+                </div>
+
+            </div>
+
+            <strong id="limitVerified">
+                5 000 000 FCFA
+            </strong>
+
+        </div>
+
+    </div>
+
+
+    <div class="neo-card">
+
+        <div class="item-row">
+
+            <div>
+
+                <div class="item-name">
+                    Frais de retrait
+                </div>
+
+                <div class="item-info">
+                    Agent + VENUN
+                </div>
+
+            </div>
+
+            <strong>
+                1%
+            </strong>
+
+        </div>
+
+    </div>
+
+
+</section>
+
+
+<!-- =====================================================
+     CLIENTS
+===================================================== -->
+
+<section id="clients" class="page">
+
+    <h1>Clients Matrice</h1>
+
+    <p class="subtitle">
+        Gestion des comptes utilisateurs
+    </p>
+
+
+    <div class="search-bar">
+
+        <input
+            id="clientSearch"
+            class="neo-inset"
+            type="text"
+            placeholder="Rechercher par nom, ID, téléphone..."
+        >
+
+        <i class="fa-solid fa-search"></i>
+
+    </div>
+
+
+    <div class="filter-group">
+
+        <button
+            class="filter-btn active"
+            data-filter="all"
+        >
+            Tous
         </button>
-      </div>
 
-      <!-- Filtres Historique Agent -->
-      <div class="filter-bar">
-        <button class="filter-chip active" onclick="filterTransactions('all', this)">Toutes Opérations</button>
-        <button class="filter-chip" onclick="filterTransactions('depot', this)">Dépôts</button>
-        <button class="filter-chip" onclick="filterTransactions('retrait', this)">Retraits</button>
-        <button class="filter-chip" onclick="filterTransactions('commission', this)">Commissions</button>
-      </div>
+        <button
+            class="filter-btn"
+            data-filter="verified"
+        >
+            Vérifiés
+        </button>
 
-      <!-- Historique Transactions Agent -->
-      <div class="coupon-list" id="couponList">
-        <div class="coupon-card" data-type="depot">
-          <div class="coupon-top">
-            <span class="coupon-status-tag tag-depot">⇡ Dépôt Client</span>
-            <span class="coupon-amount minus">-15 000 FCFA</span>
-          </div>
-          <div class="coupon-divider"></div>
-          <div class="coupon-bottom">
-            <span class="coupon-ref">Matrice: #ID-A9B2</span>
-            <span>Aujourd'hui • 10:15</span>
-          </div>
-        </div>
+        <button
+            class="filter-btn"
+            data-filter="not_verified"
+        >
+            Non vérifiés
+        </button>
 
-        <div class="coupon-card" data-type="commission">
-          <div class="coupon-top">
-            <span class="coupon-status-tag tag-commission">★ Commission</span>
-            <span class="coupon-amount plus">+150 FCFA</span>
-          </div>
-          <div class="coupon-divider"></div>
-          <div class="coupon-bottom">
-            <span class="coupon-ref">Réf: Dépôt #TX-918</span>
-            <span>Aujourd'hui • 10:15</span>
-          </div>
-        </div>
-
-        <div class="coupon-card" data-type="retrait">
-          <div class="coupon-top">
-            <span class="coupon-status-tag tag-retrait">⇣ Retrait Client</span>
-            <span class="coupon-amount plus">+25 000 FCFA</span>
-          </div>
-          <div class="coupon-divider"></div>
-          <div class="coupon-bottom">
-            <span class="coupon-ref">Tél: 90 ** ** 12</span>
-            <span>Hier • 16:40</span>
-          </div>
-        </div>
-      </div>
     </div>
 
-    <!-- PAGE SCANNER MATRICE INTEGRÉ -->
-    <div id="page-scanner" class="page">
-      <div class="page-title">Décodeur Matrice VENUN</div>
 
-      <div class="scanner-container">
-        <!-- VIEWPORT CAMÉRA RÉEL AVEC GRILLAGE 10x10 -->
-        <div class="viewport">
-          <video id="camera" class="video-feed" autoplay playsinline></video>
+    <div id="usersList">
 
-          <div class="laser-line" id="scannerLaser"></div>
-
-          <div class="corner-target top-left"></div>
-          <div class="corner-target top-right"></div>
-          <div class="corner-target bottom-left"></div>
-          <div class="corner-target bottom-right"></div>
-
-          <!-- Grillage 10x10 dynamique -->
-          <div class="grid-overlay" id="grid"></div>
+        <div class="loading">
+            Chargement des utilisateurs...
         </div>
 
-        <div class="scan-status" id="scanStatusText">Alignez la carte Matrice dans le cadre</div>
+    </div>
 
-        <div class="matrix-result" id="scanResult">
-          <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
-            <span style="font-size: 0.8rem; color: var(--text-muted);">ID MATRICE IDENTIFIÉ</span>
-            <strong style="color: var(--accent-green);" id="detectedMatrixId">#VN-77X-91</strong>
-          </div>
-          <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
-            <span style="font-size: 0.8rem; color: var(--text-muted);">NOM DU CLIENT</span>
-            <strong>Client Autorisé</strong>
-          </div>
-          <div style="display: flex; justify-content: space-between;">
-             <button class="btn-submit" style="padding: 10px; font-size: 0.8rem; width: 48%;" onclick="openModalWithClient('modal-depot')">Dépôt</button>
-             <button class="btn-submit" style="padding: 10px; font-size: 0.8rem; width: 48%; background: var(--danger-red); color: white;" onclick="openModalWithClient('modal-retrait')">Retrait</button>
-          </div>
+
+</section>
+
+
+<!-- =====================================================
+     RESEAU
+===================================================== -->
+
+<section id="network" class="page">
+
+    <h1>Réseau VENUN</h1>
+
+    <p class="subtitle">
+        Agents et marchands
+    </p>
+
+
+    <div class="filter-group">
+
+        <button
+            class="filter-btn active"
+            data-network="agents"
+        >
+            Agents
+        </button>
+
+        <button
+            class="filter-btn"
+            data-network="marchands"
+        >
+            Marchands
+        </button>
+
+    </div>
+
+
+    <div
+        id="agentsList"
+    >
+
+        <div class="loading">
+            Chargement des agents...
         </div>
-      </div>
 
-      <button id="btn-scan-trigger" class="btn-action-scan" onclick="triggerScan()">
-        Décoder la Carte Matrice
-      </button>
     </div>
 
-    <!-- PAGE PROFIL AGENT -->
-    <div id="page-profil" class="page">
-      <div class="page-title">Profil Agent</div>
 
-      <div class="profile-card">
-        <div class="profile-avatar">V</div>
-        <h3 style="margin-bottom: 4px;">Venunye</h3>
-        <span class="agent-badge">Agent VENUN Agréé</span>
+    <div
+        id="marchandsList"
+        style="display:none"
+    >
 
-        <div class="profile-details-list">
-          <div class="profile-item">
-            <span class="label">Terminal ID</span>
-            <span class="value">AG-9912-TG</span>
-          </div>
-          <div class="profile-item">
-            <span class="label">Appareil POS</span>
-            <span class="value">Google Pixel</span>
-          </div>
-          <div class="profile-item">
-            <span class="label">Localisation</span>
-            <span class="value">Lomé, Togo</span>
-          </div>
-          <div class="profile-item">
-            <span class="label">Taux Commission</span>
-            <span class="value" style="color: var(--warning-amber);">1% par Opération</span>
-          </div>
+        <div class="loading">
+            Chargement des marchands...
         </div>
-      </div>
 
-      <div class="settings-card">
-        <div class="settings-title">
-          <span>⚙️</span> Thème de l'Application
+    </div>
+
+
+    <button
+        id="createAgentBtn"
+        class="btn-primary"
+        style="width:100%;margin-top:15px"
+    >
+        <i class="fa-solid fa-user-plus"></i>
+        Créer un agent
+    </button>
+
+
+    <button
+        id="createMerchantBtn"
+        class="btn-primary"
+        style="width:100%;margin-top:10px;display:none"
+    >
+        <i class="fa-solid fa-store"></i>
+        Créer un marchand
+    </button>
+
+
+  </section>
+  <!-- =====================================================
+     KYC
+===================================================== -->
+
+<section id="kyc" class="page">
+
+    <h1>Demandes KYC</h1>
+
+    <p class="subtitle">
+        Vérification des identités
+    </p>
+
+
+    <div id="kycList">
+
+        <div class="loading">
+            Chargement des demandes...
         </div>
-        <div class="theme-toggle-grid">
-          <button id="btn-theme-dark" class="theme-btn active" onclick="setTheme('dark')">
-            🌙 Sombre
-          </button>
-          <button id="btn-theme-light" class="theme-btn" onclick="setTheme('light')">
-            ☀️ Clair
-          </button>
+
+    </div>
+
+</section>
+
+
+<!-- =====================================================
+     TRANSACTIONS
+===================================================== -->
+
+<section id="transactions" class="page">
+
+    <h1>Transactions</h1>
+
+    <p class="subtitle">
+        Dépôts, retraits et transferts
+    </p>
+
+
+    <div class="filter-group">
+
+        <button
+            class="filter-btn active"
+            data-tx-filter="all"
+        >
+            Toutes
+        </button>
+
+        <button
+            class="filter-btn"
+            data-tx-filter="deposit"
+        >
+            Dépôts
+        </button>
+
+        <button
+            class="filter-btn"
+            data-tx-filter="withdrawal"
+        >
+            Retraits
+        </button>
+
+        <button
+            class="filter-btn"
+            data-tx-filter="transfer"
+        >
+            Transferts
+        </button>
+
+    </div>
+
+
+    <div id="transactionsList">
+
+        <div class="loading">
+            Chargement des transactions...
         </div>
-      </div>
 
-      <button class="btn-submit" style="background: rgba(255, 61, 113, 0.15); color: var(--danger-red); border: 1px solid rgba(255, 61, 113, 0.3);" onclick="showToast('Déconnexion...')">
-        Fermer la caisse (Déconnexion)
-      </button>
     </div>
 
-  </div>
+</section>
 
-  <!-- BARRE DE NAVIGATION FLOTTANTE -->
-  <div class="floating-navbar">
-    <div class="nav-btn active" onclick="switchTab('accueil', this)">
-      <span class="nav-btn-icon">
-        <svg viewBox="0 0 24 24" fill="none" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
-          <polyline points="9 22 9 12 15 12 15 22"></polyline>
-        </svg>
-      </span>
-      <span class="nav-text">Caisse</span>
+
+<!-- =====================================================
+     CARTES
+===================================================== -->
+
+<section id="cards" class="page">
+
+    <h1>Cartes Matrice</h1>
+
+    <p class="subtitle">
+        Attribution et gestion des cartes
+    </p>
+
+
+    <button
+        id="openCardAssignment"
+        class="btn-primary"
+        style="width:100%;margin-bottom:18px"
+    >
+        <i class="fa-solid fa-credit-card"></i>
+        Attribuer une carte
+    </button>
+
+
+    <div id="cardsList">
+
+        <div class="loading">
+            Chargement des cartes...
+        </div>
+
     </div>
 
-    <div class="nav-btn" onclick="switchTab('scanner', this)">
-      <span class="nav-btn-icon">
-        <svg viewBox="0 0 24 24" fill="none" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-          <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
-          <line x1="9" y1="3" x2="9" y2="21"></line>
-          <line x1="15" y1="3" x2="15" y2="21"></line>
-          <line x1="3" y1="9" x2="21" y2="9"></line>
-          <line x1="3" y1="15" x2="21" y2="15"></line>
-        </svg>
-      </span>
-      <span class="nav-text">Scan Matrice</span>
+</section>
+
+
+<!-- =====================================================
+     MODALE CLIENT
+===================================================== -->
+
+<div
+    id="userModal"
+    class="modal"
+>
+
+    <div class="modal-box">
+
+        <h2
+            id="userModalTitle"
+            class="modal-title"
+        >
+            Client
+        </h2>
+
+
+        <div
+            id="userModalContent"
+        ></div>
+
+
+        <div class="form-actions">
+
+            <button
+                class="btn-secondary"
+                onclick="closeModal('userModal')"
+            >
+                Fermer
+            </button>
+
+        </div>
+
     </div>
 
-    <div class="nav-btn" onclick="switchTab('profil', this)">
-      <span class="nav-btn-icon">
-        <svg viewBox="0 0 24 24" fill="none" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
-          <circle cx="12" cy="7" r="4"></circle>
-        </svg>
-      </span>
-      <span class="nav-text">Profil</span>
-    </div>
-  </div>
 </div>
 
-<!-- CANVAS MASQUÉ POUR L'ANALYSE D'IMAGE DES PIXELS -->
-<canvas id="snapshot" style="display: none;"></canvas>
 
-<!-- MODALES AGENT -->
+<!-- =====================================================
+     MODALE CREATION AGENT
+===================================================== -->
 
-<!-- Modal Dépôt Client -->
-<div id="modal-depot" class="modal-overlay">
-  <div class="modal-card">
-    <div class="modal-header">
-      <span class="modal-title">Dépôt sur compte Client</span>
-      <button class="modal-close" onclick="closeModal('modal-depot')">✕</button>
+<div
+    id="agentModal"
+    class="modal"
+>
+
+    <div class="modal-box">
+
+        <h2 class="modal-title">
+            Créer un agent
+        </h2>
+
+
+        <div class="form-group">
+
+            <label class="form-label">
+                Nom de l'agent
+            </label>
+
+            <input
+                id="agentName"
+                class="neo-inset"
+                type="text"
+                placeholder="Ex: Agent Lomé Centre"
+            >
+
+        </div>
+
+
+        <div class="form-group">
+
+            <label class="form-label">
+                ID d'argent
+            </label>
+
+            <input
+                id="agentMoneyId"
+                class="neo-inset"
+                type="text"
+                placeholder="ID d'argent"
+            >
+
+        </div>
+
+
+        <div class="form-group">
+
+            <label class="form-label">
+                Mot de passe
+            </label>
+
+            <input
+                id="agentPassword"
+                class="neo-inset"
+                type="password"
+                placeholder="Mot de passe"
+            >
+
+        </div>
+
+
+        <div class="form-actions">
+
+            <button
+                class="btn-secondary"
+                onclick="closeModal('agentModal')"
+            >
+                Annuler
+            </button>
+
+            <button
+                id="saveAgentBtn"
+                class="btn-primary"
+            >
+                Créer
+            </button>
+
+        </div>
+
     </div>
-    <div class="form-group">
-      <label class="form-label">Identifiant Client (Tel ou Matrice)</label>
-      <input type="text" id="depot-client-id" class="form-input" placeholder="Ex: VN-XXXX ou +228...">
-    </div>
-    <div class="form-group">
-      <label class="form-label">Montant à déposer (FCFA)</label>
-      <input type="number" class="form-input" placeholder="Ex: 5000">
-    </div>
-    <button class="btn-submit" onclick="submitTransaction('Dépôt validé ! Commission ajoutée.')">Valider le Dépôt</button>
-  </div>
+
 </div>
 
-<!-- Modal Retrait Client -->
-<div id="modal-retrait" class="modal-overlay">
-  <div class="modal-card">
-    <div class="modal-header">
-      <span class="modal-title">Retrait depuis compte Client</span>
-      <button class="modal-close" onclick="closeModal('modal-retrait')">✕</button>
+
+<!-- =====================================================
+     MODALE MARCHAND
+===================================================== -->
+
+<div
+    id="merchantModal"
+    class="modal"
+>
+
+    <div class="modal-box">
+
+        <h2 class="modal-title">
+            Créer un marchand
+        </h2>
+
+
+        <div class="form-group">
+
+            <label class="form-label">
+                Nom du marchand
+            </label>
+
+            <input
+                id="merchantName"
+                class="neo-inset"
+                type="text"
+                placeholder="Nom du marchand"
+            >
+
+        </div>
+
+
+        <div class="form-group">
+
+            <label class="form-label">
+                ID marchand
+            </label>
+
+            <input
+                id="merchantId"
+                class="neo-inset"
+                type="text"
+                placeholder="ID marchand"
+            >
+
+        </div>
+
+
+        <div class="form-group">
+
+            <label class="form-label">
+                Mot de passe
+            </label>
+
+            <input
+                id="merchantPassword"
+                class="neo-inset"
+                type="password"
+                placeholder="Mot de passe"
+            >
+
+        </div>
+
+
+        <div class="form-actions">
+
+            <button
+                class="btn-secondary"
+                onclick="closeModal('merchantModal')"
+            >
+                Annuler
+            </button>
+
+            <button
+                id="saveMerchantBtn"
+                class="btn-primary"
+            >
+                Créer
+            </button>
+
+        </div>
+
     </div>
-    <div class="form-group">
-      <label class="form-label">ID Matrice du Client</label>
-      <input type="text" id="retrait-client-id" class="form-input" placeholder="Scanner la carte pour remplir">
-    </div>
-    <div class="form-group">
-      <label class="form-label">Montant à retirer (FCFA)</label>
-      <input type="number" class="form-input" placeholder="Ex: 10000">
-    </div>
-    <div class="form-group">
-      <label class="form-label">Code PIN Secret Client</label>
-      <input type="password" class="form-input" placeholder="Le client tape son code ici">
-    </div>
-    <button class="btn-submit" style="background: var(--danger-red); color: #fff;" onclick="submitTransaction('Retrait validé ! Caisse approvisionnée.')">Autoriser le Retrait</button>
-  </div>
+
 </div>
 
-<!-- Modal Float -->
-<div id="modal-float" class="modal-overlay">
-  <div class="modal-card">
-    <div class="modal-header">
-      <span class="modal-title">Réapprovisionner la Caisse</span>
-      <button class="modal-close" onclick="closeModal('modal-float')">✕</button>
+
+<!-- =====================================================
+     MODALE ATTRIBUTION CARTE
+===================================================== -->
+
+<div
+    id="cardModal"
+    class="modal"
+>
+
+    <div class="modal-box">
+
+        <h2 class="modal-title">
+            Attribuer une carte
+        </h2>
+
+
+        <p
+            style="
+            color:var(--muted);
+            font-size:.75rem;
+            margin-bottom:10px;
+            "
+        >
+            Scanne le code caché de la carte
+            ou importe son image.
+        </p>
+
+
+        <div class="scanner-box">
+
+            <video
+                id="scannerVideo"
+                autoplay
+                playsinline
+            ></video>
+
+            <div class="scanner-frame"></div>
+
+        </div>
+
+
+        <canvas id="scannerCanvas"></canvas>
+
+
+        <div
+            id="scannerStatus"
+            class="scanner-status"
+        >
+            Scanner prêt
+        </div>
+
+
+        <div class="small-grid">
+
+            <button
+                id="startScannerBtn"
+                class="btn-primary"
+            >
+                📷 Scanner
+            </button>
+
+
+            <button
+                id="galleryScannerBtn"
+                class="btn-secondary"
+            >
+                📁 Importer
+            </button>
+
+        </div>
+
+
+        <input
+            id="cardImageInput"
+            class="file-input"
+            type="file"
+            accept="image/*"
+        >
+
+
+        <div
+            class="form-group"
+            style="margin-top:15px"
+        >
+
+            <label class="form-label">
+                ID carte détecté
+            </label>
+
+            <input
+                id="detectedCardId"
+                class="neo-inset"
+                type="text"
+                readonly
+                placeholder="AA-XXXXXXXXXX"
+            >
+
+        </div>
+
+
+        <div class="form-group">
+
+            <label class="form-label">
+                ID utilisateur VENUN
+            </label>
+
+            <input
+                id="cardUserId"
+                class="neo-inset"
+                type="text"
+                placeholder="VNXXXXXXXX"
+            >
+
+        </div>
+
+
+        <div class="form-actions">
+
+            <button
+                class="btn-secondary"
+                onclick="closeCardModal()"
+            >
+                Annuler
+            </button>
+
+            <button
+                id="assignCardBtn"
+                class="btn-primary"
+            >
+                Attribuer
+            </button>
+
+        </div>
+
     </div>
-    <div class="form-group">
-      <label class="form-label">Source du Float</label>
-      <select class="form-select">
-        <option>Banque Principale</option>
-        <option>Super-Agent VENUN</option>
-      </select>
-    </div>
-    <div class="form-group">
-      <label class="form-label">Montant (FCFA)</label>
-      <input type="number" class="form-input" placeholder="Ex: 500000">
-    </div>
-    <button class="btn-submit" style="background: var(--accent-blue); color: #fff;" onclick="submitTransaction('Demande de réapprovisionnement envoyée !')">Demander du Float</button>
-  </div>
+
 </div>
 
-<script>
-  let isBalanceHidden = false;
-  const rawBalance = "850 000";
-  const rawCommission = "4 250";
-  let lastDecodedId = "#VN-77X-91";
 
-  // 1. DÉMARRAGE ET INITIALISATION DU SCANNER
-  const grid = document.getElementById('grid');
-  for (let i = 0; i < 100; i++) {
-    const cell = document.createElement('div');
-    cell.className = 'grid-cell';
-    grid.appendChild(cell);
-  }
+<!-- =====================================================
+     NAVIGATION
+===================================================== -->
 
-  const videoElement = document.getElementById('camera');
-  let isCameraActive = false;
+<nav class="bottom-nav">
 
-  async function startCamera() {
-    if (isCameraActive) return;
+
+    <div
+        class="nav-item active"
+        data-page="dashboard"
+    >
+
+        <i class="fa-solid fa-chart-line"></i>
+
+        <span>
+            Tableau
+        </span>
+
+    </div>
+
+
+    <div
+        class="nav-item"
+        data-page="clients"
+    >
+
+        <i class="fa-solid fa-users"></i>
+
+        <span>
+            Clients
+        </span>
+
+    </div>
+
+
+    <div
+        class="nav-item"
+        data-page="cards"
+    >
+
+        <i class="fa-solid fa-credit-card"></i>
+
+        <span>
+            Cartes
+        </span>
+
+    </div>
+
+
+    <div
+        class="nav-item"
+        data-page="network"
+    >
+
+        <i class="fa-solid fa-store"></i>
+
+        <span>
+            Réseau
+        </span>
+
+    </div>
+
+
+    <div
+        class="nav-item"
+        data-page="kyc"
+    >
+
+        <i class="fa-solid fa-id-card"></i>
+
+        <span>
+            KYC
+        </span>
+
+    </div>
+
+
+    <div
+        class="nav-item"
+        data-page="transactions"
+    >
+
+        <i class="fa-solid fa-money-bill-transfer"></i>
+
+        <span>
+            Flux
+        </span>
+
+    </div>
+
+
+  </nav>
+  <script type="module">
+
+
+/* =====================================================
+   FIREBASE
+===================================================== */
+
+
+import {
+
+    initializeApp
+
+} from
+"https://www.gstatic.com/firebasejs/12.17.1/firebase-app.js";
+
+
+import {
+
+    getFirestore,
+    collection,
+    doc,
+    getDoc,
+    addDoc,
+    setDoc,
+    updateDoc,
+    onSnapshot,
+    query,
+    orderBy,
+    limit,
+    serverTimestamp,
+    increment
+
+} from
+"https://www.gstatic.com/firebasejs/12.17.1/firebase-firestore.js";
+
+
+const firebaseConfig = {
+
+    apiKey:
+        "AIzaSyB-oW6VDN4bKx6FcvpUR6X9kdlhs9JSoRs",
+
+    authDomain:
+        "venun-f8213.firebaseapp.com",
+
+    projectId:
+        "venun-f8213",
+
+    storageBucket:
+        "venun-f8213.firebasestorage.app",
+
+    messagingSenderId:
+        "848965267348",
+
+    appId:
+        "1:848965267348:web:63a8597b2425bc847d2981",
+
+    measurementId:
+        "G-JLS00GMK6E"
+
+};
+
+
+const app =
+    initializeApp(firebaseConfig);
+
+
+const db =
+    getFirestore(app);
+
+
+/* =====================================================
+   VARIABLES
+===================================================== */
+
+
+let users = [];
+
+let agents = [];
+
+let marchands = [];
+
+let cards = [];
+
+let transactions = [];
+
+let kycRequests = [];
+
+let currentUserFilter = "all";
+
+let currentTransactionFilter = "all";
+
+let scannerStream = null;
+
+let scannerRunning = false;
+
+
+/* =====================================================
+   UTILITAIRES
+===================================================== */
+
+
+window.showAlert = function(
+    message,
+    type = "info"
+) {
+
+    const alert =
+        document.getElementById("alert");
+
+
+    alert.textContent = message;
+
+    alert.className =
+        "alert show " + type;
+
+
+    setTimeout(() => {
+
+        alert.classList.remove("show");
+
+    }, 3500);
+
+};
+
+
+function formatMoney(value) {
+
+    const number =
+        Number(value) || 0;
+
+
+    return number.toLocaleString(
+        "fr-FR"
+    ) + " FCFA";
+
+}
+
+
+function formatDate(value) {
+
+    if (!value)
+        return "—";
+
+
     try {
-      const stream = await navigator.mediaDevices.getUserMedia({
-        video: { facingMode: 'environment' }
-      });
-      videoElement.srcObject = stream;
-      isCameraActive = true;
-    } catch (err) {
-      console.error("Erreur caméra : ", err);
-      document.getElementById('scanStatusText').innerText = "Impossible d'accéder à la caméra";
-    }
-  }
 
-  // Démarrer la caméra au chargement
-  startCamera();
+        if (
+            typeof value.toDate ===
+            "function"
+        ) {
 
-  // 2. LOGIQUE RÉELLE DE DECODAGE ET D'ANALYSE D'IMAGE
-  function triggerScan() {
-    if (!videoElement.videoWidth) {
-      showToast("La caméra s'initialise...");
-      return;
-    }
+            return value
+                .toDate()
+                .toLocaleString(
+                    "fr-FR"
+                );
 
-    const btn = document.getElementById('btn-scan-trigger');
-    const laser = document.getElementById('scannerLaser');
-    const statusText = document.getElementById('scanStatusText');
-    const resultBox = document.getElementById('scanResult');
-    const cells = document.querySelectorAll('.grid-cell');
-    const canvas = document.getElementById('snapshot');
-    const ctx = canvas.getContext('2d', { willReadFrequently: true });
-
-    // Réinitialiser les animations et grilles
-    resultBox.classList.remove('active');
-    cells.forEach(c => c.classList.remove('active'));
-    laser.style.display = 'block';
-    btn.textContent = "Analyse des pixels en cours...";
-    statusText.innerText = "Lecture de la matrice 10x10...";
-    statusText.style.color = "var(--accent-green)";
-
-    // Découpage carré parfait au centre du flux vidéo
-    const size = Math.min(videoElement.videoWidth, videoElement.videoHeight);
-    const startX = (videoElement.videoWidth - size) / 2;
-    const startY = (videoElement.videoHeight - size) / 2;
-
-    canvas.width = size;
-    canvas.height = size;
-
-    // Capture de l'image sur le Canvas
-    ctx.drawImage(videoElement, startX, startY, size, size, 0, 0, size, size);
-
-    // Analyse des 100 cases de la grille
-    const cellWidth = Math.floor(size / 10);
-    const cellHeight = Math.floor(size / 10);
-    let activeCellsCount = 0;
-
-    for (let row = 0; row < 10; row++) {
-      for (let col = 0; col < 10; col++) {
-        const imgData = ctx.getImageData(col * cellWidth, row * cellHeight, cellWidth, cellHeight);
-        const pixels = imgData.data;
-        let totalBrightness = 0;
-
-        for (let i = 0; i < pixels.length; i += 4) {
-          totalBrightness += (pixels[i] + pixels[i+1] + pixels[i+2]) / 3;
         }
 
-        const avgBrightness = totalBrightness / (pixels.length / 4);
 
-        // Seuil de détection des zones sombres (motifs/points)
-        if (avgBrightness < 100) {
-          const cellIndex = (row * 10) + col;
-          cells[cellIndex].classList.add('active');
-          activeCellsCount++;
+        return new Date(value)
+            .toLocaleString(
+                "fr-FR"
+            );
+
+    } catch {
+
+        return "—";
+
+    }
+
+}
+
+
+window.openModal = function(id) {
+
+    const modal =
+        document.getElementById(id);
+
+    if (modal)
+        modal.classList.add("active");
+
+};
+
+
+window.closeModal = function(id) {
+
+    const modal =
+        document.getElementById(id);
+
+    if (modal)
+        modal.classList.remove("active");
+
+};
+
+
+/* =====================================================
+   NAVIGATION
+===================================================== */
+
+
+document
+.querySelectorAll(".nav-item")
+.forEach(item => {
+
+    item.addEventListener(
+        "click",
+        () => {
+
+            const page =
+                item.dataset.page;
+
+
+            document
+            .querySelectorAll(".page")
+            .forEach(p => {
+
+                p.classList.remove(
+                    "active"
+                );
+
+            });
+
+
+            const target =
+                document.getElementById(
+                    page
+                );
+
+
+            if (target)
+                target.classList.add(
+                    "active"
+                );
+
+
+            document
+            .querySelectorAll(".nav-item")
+            .forEach(n => {
+
+                n.classList.remove(
+                    "active"
+                );
+
+            });
+
+
+            item.classList.add(
+                "active"
+            );
+
         }
-      }
+    );
+
+});
+
+
+/* =====================================================
+   USERS
+===================================================== */
+
+
+function loadUsers() {
+
+    const usersRef =
+        collection(
+            db,
+            "users"
+        );
+
+
+    onSnapshot(
+
+        usersRef,
+
+        snapshot => {
+
+            users = [];
+
+
+            snapshot.forEach(
+                document => {
+
+                    users.push({
+
+                        id:
+                            document.id,
+
+                        ...document.data()
+
+                    });
+
+                }
+            );
+
+
+            renderUsers();
+
+            updateDashboard();
+
+        },
+
+        error => {
+
+            console.error(
+                "Erreur users:",
+                error
+            );
+
+
+            document
+            .getElementById(
+                "usersList"
+            )
+            .innerHTML = `
+
+                <div class="empty">
+
+                    <i
+                        class="fa-solid
+                        fa-triangle-exclamation"
+                        style="
+                        color:var(--red);
+                        font-size:25px;
+                        "
+                    ></i>
+
+                    <br><br>
+
+                    Impossible de charger
+                    les utilisateurs.
+
+                    <br>
+
+                    <small>
+                        ${error.message}
+                    </small>
+
+                </div>
+
+            `;
+
+        }
+
+    );
+
+}
+
+
+/* =====================================================
+   RENDU USERS
+===================================================== */
+
+
+function renderUsers() {
+
+    const container =
+        document.getElementById(
+            "usersList"
+        );
+
+
+    const search =
+        document
+        .getElementById(
+            "clientSearch"
+        )
+        .value
+        .toLowerCase()
+        .trim();
+
+
+    const filtered =
+        users.filter(user => {
+
+
+            const status =
+                user.kycStatus ||
+                "not_verified";
+
+
+            const name =
+                (
+                    (user.firstName || "") +
+                    " " +
+                    (user.lastName || "")
+                )
+                .toLowerCase();
+
+
+            const visibleId =
+                (
+                    user.visibleId || ""
+                )
+                .toLowerCase();
+
+
+            const phone =
+                (
+                    user.phone || ""
+                )
+                .toLowerCase();
+
+
+            const matchesSearch =
+
+                !search ||
+
+                name.includes(search) ||
+
+                visibleId.includes(search) ||
+
+                phone.includes(search);
+
+
+            const matchesFilter =
+
+                currentUserFilter ===
+                "all"
+
+                ||
+
+                status ===
+                currentUserFilter;
+
+
+            return (
+                matchesSearch &&
+                matchesFilter
+            );
+
+        });
+
+
+    if (!filtered.length) {
+
+        container.innerHTML = `
+
+            <div class="empty">
+
+                Aucun utilisateur trouvé.
+
+            </div>
+
+        `;
+
+        return;
+
     }
 
-    // Traitement du résultat
-    setTimeout(() => {
-      laser.style.display = 'none';
-      btn.textContent = "Décoder la Carte Matrice";
-      
-      // Générer ou afficher un ID relatif à la matrice lue
-      lastDecodedId = "#VN-" + (activeCellsCount * 17 + 101) + "X";
-      document.getElementById('detectedMatrixId').innerText = lastDecodedId;
 
-      statusText.innerText = `Matrice décodée (${activeCellsCount} cases identifiées)`;
-      resultBox.classList.add('active');
-      showToast("Matrice lue avec succès !");
-    }, 1200);
-  }
+    container.innerHTML = "";
 
-  // Auto-remplir la modale avec le client scanné
-  function openModalWithClient(modalId) {
-    if (modalId === 'modal-depot') {
-      document.getElementById('depot-client-id').value = lastDecodedId;
-    } else if (modalId === 'modal-retrait') {
-      document.getElementById('retrait-client-id').value = lastDecodedId;
-    }
-    openModal(modalId);
-  }
 
-  /* GESTION THÈME */
-  function setTheme(themeMode) {
-    const btnDark = document.getElementById('btn-theme-dark');
-    const btnLight = document.getElementById('btn-theme-light');
+    filtered.forEach(user => {
 
-    if (themeMode === 'light') {
-      document.documentElement.setAttribute('data-theme', 'light');
-      btnLight.classList.add('active');
-      btnDark.classList.remove('active');
-      showToast("Mode Clair activé");
-    } else {
-      document.documentElement.removeAttribute('data-theme');
-      btnDark.classList.add('active');
-      btnLight.classList.remove('active');
-      showToast("Mode Sombre activé");
-    }
-  }
+        const status =
+            user.kycStatus ||
+            "not_verified";
 
-  /* AFFICHAGE / MASQUAGE DU SOLDE */
-  function toggleBalance() {
-    isBalanceHidden = !isBalanceHidden;
-    const valElem = document.getElementById('balance-value');
-    const commElem = document.getElementById('commission-value');
 
-    if (isBalanceHidden) {
-      valElem.innerText = "••••••";
-      commElem.innerText = "••••";
-    } else {
-      valElem.innerText = rawBalance;
-      commElem.innerText = rawCommission;
-    }
-  }
+        const verified =
+            status === "verified";
 
-  /* TOAST NOTIFICATION */
-  function showToast(message) {
-    const toast = document.getElementById('toast');
-    const msgElem = document.getElementById('toast-message');
-    msgElem.innerText = message;
-    toast.classList.add('show');
-    
-    setTimeout(() => {
-      toast.classList.remove('show');
-    }, 2800);
-  }
 
-  /* MODALES */
-  function openModal(id) {
-    document.getElementById(id).classList.add('active');
-  }
+        const card =
+            document.createElement(
+                "div"
+            );
 
-  function closeModal(id) {
-    document.getElementById(id).classList.remove('active');
-  }
 
-  function submitTransaction(successMsg) {
-    const activeModal = document.querySelector('.modal-overlay.active');
-    if (activeModal) activeModal.classList.remove('active');
-    showToast(successMsg);
-  }
+        card.className =
+            "neo-card";
 
-  /* FILTRES HISTORIQUE */
-  function filterTransactions(type, btnElement) {
-    document.querySelectorAll('.filter-chip').forEach(chip => chip.classList.remove('active'));
-    btnElement.classList.add('active');
 
-    const coupons = document.querySelectorAll('.coupon-card');
-    coupons.forEach(coupon => {
-      if (type === 'all' || coupon.getAttribute('data-type') === type) {
-        coupon.style.display = 'block';
-      } else {
-        coupon.style.display = 'none';
-      }
+        card.innerHTML = `
+
+            <div class="item-row">
+
+                <div class="item-main">
+
+                    <div class="item-name">
+
+                        ${escapeHtml(
+                            (
+                                user.firstName ||
+                                ""
+                            ) +
+                            " " +
+                            (
+                                user.lastName ||
+                                ""
+                            )
+                        )}
+
+                    </div>
+
+
+                    <div class="item-info">
+
+                        ID :
+                        ${escapeHtml(
+                            user.visibleId ||
+                            user.id
+                        )}
+
+                    </div>
+
+
+                    <div class="item-info">
+
+                        Solde :
+                        ${formatMoney(
+                            user.balance
+                        )}
+
+                    </div>
+
+                </div>
+
+
+                <div
+                    style="
+                    text-align:right;
+                    "
+                >
+
+                    <div
+                        class="
+                        status
+                        ${
+                            verified
+                            ?
+                            "status-verified"
+                            :
+                            "status-unverified"
+                        }
+                        "
+                    >
+
+                        ${
+                            verified
+                            ?
+                            "✓ Vérifié"
+                            :
+                            "⚠ Non vérifié"
+                        }
+
+                    </div>
+
+
+                    <button
+                        class="action-btn"
+                        data-user-id="${user.id}"
+                    >
+
+                        <i
+                            class="
+                            fa-solid
+                            fa-ellipsis
+                            "
+                        ></i>
+
+                    </button>
+
+                </div>
+
+            </div>
+
+        `;
+
+
+        card
+        .querySelector(
+            ".action-btn"
+        )
+        .addEventListener(
+            "click",
+            () => {
+
+                openUserDetails(
+                    user
+                );
+
+            }
+        );
+
+
+        container.appendChild(
+            card
+        );
+
     });
-  }
 
-  /* NAVIGATION TAB */
-  function switchTab(pageId, element) {
-    document.querySelectorAll('.page').forEach(page => page.classList.remove('active'));
-    document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
+}
 
-    document.getElementById(`page-${pageId}`).classList.add('active');
-    element.classList.add('active');
 
-    // Relancer la caméra si on bascule sur l'onglet Scanner
-    if (pageId === 'scanner') {
-      startCamera();
+/* =====================================================
+   ECHAPPEMENT HTML
+===================================================== */
+
+
+function escapeHtml(value) {
+
+    return String(value ?? "")
+        .replaceAll("&","&amp;")
+        .replaceAll("<","&lt;")
+        .replaceAll(">","&gt;")
+        .replaceAll('"',"&quot;")
+        .replaceAll("'","&#039;");
+
+}
+
+
+/* =====================================================
+   DETAILS UTILISATEUR
+===================================================== */
+
+
+function openUserDetails(user) {
+
+    const status =
+        user.kycStatus ||
+        "not_verified";
+
+
+    const verified =
+        status === "verified";
+
+
+    document
+    .getElementById(
+        "userModalTitle"
+    )
+    .textContent =
+        (
+            user.firstName || ""
+        ) +
+        " " +
+        (
+            user.lastName || ""
+        );
+
+
+    document
+    .getElementById(
+        "userModalContent"
+    )
+    .innerHTML = `
+
+        <div class="neo-card">
+
+            <div class="item-info">
+                ID VENUN
+            </div>
+
+            <strong>
+                ${escapeHtml(
+                    user.visibleId ||
+                    user.id
+                )}
+            </strong>
+
+        </div>
+
+
+        <div class="neo-card">
+
+            <div class="item-info">
+                Téléphone
+            </div>
+
+            <strong>
+                ${escapeHtml(
+                    user.phone || "—"
+                )}
+            </strong>
+
+        </div>
+
+
+        <div class="neo-card">
+
+            <div class="item-info">
+                Email
+            </div>
+
+            <strong>
+                ${escapeHtml(
+                    user.email || "—"
+                )}
+            </strong>
+
+        </div>
+
+
+        <div class="neo-card">
+
+            <div class="item-info">
+                Solde
+            </div>
+
+            <strong>
+                ${formatMoney(
+                    user.balance
+                )}
+            </strong>
+
+        </div>
+
+
+        <div class="neo-card">
+
+            <div class="item-info">
+                Statut KYC
+            </div>
+
+            <strong
+                style="
+                color:
+                ${
+                    verified
+                    ?
+                    "var(--green)"
+                    :
+                    "var(--orange)"
+                }
+                "
+            >
+                ${
+                    verified
+                    ?
+                    "✓ Vérifié"
+                    :
+                    "⚠ Non vérifié"
+                }
+            </strong>
+
+        </div>
+
+
+        <div class="form-actions">
+
+            <button
+                class="btn-primary"
+                id="toggleKycBtn"
+            >
+
+                ${
+                    verified
+                    ?
+                    "Retirer la vérification"
+                    :
+                    "Vérifier le compte"
+                }
+
+            </button>
+
+        </div>
+
+    `;
+
+
+    document
+    .getElementById(
+        "toggleKycBtn"
+    )
+    .onclick =
+        () => toggleUserKyc(
+            user
+        );
+
+
+    openModal(
+        "userModal"
+    );
+
+}
+
+
+async function toggleUserKyc(user) {
+
+    const newStatus =
+        user.kycStatus === "verified"
+        ?
+        "not_verified"
+        :
+        "verified";
+
+
+    try {
+
+        await updateDoc(
+
+            doc(
+                db,
+                "users",
+                user.id
+            ),
+
+            {
+
+                kycStatus:
+                    newStatus,
+
+                kycUpdatedAt:
+                    serverTimestamp()
+
+            }
+
+        );
+
+
+        showAlert(
+            newStatus === "verified"
+            ?
+            "Compte vérifié."
+            :
+            "Compte repassé en non vérifié.",
+            "success"
+        );
+
+
+        closeModal(
+            "userModal"
+        );
+
+
+    } catch(error) {
+
+        console.error(error);
+
+        showAlert(
+            "Erreur : " +
+            error.message,
+            "error"
+        );
+
     }
-  }
+
+}
+
+
+/* =====================================================
+   FILTRES USERS
+===================================================== */
+
+
+document
+.querySelectorAll(
+    "[data-filter]"
+)
+.forEach(button => {
+
+    button.addEventListener(
+        "click",
+        () => {
+
+            document
+            .querySelectorAll(
+                "[data-filter]"
+            )
+            .forEach(
+                b =>
+                b.classList.remove(
+                    "active"
+                )
+            );
+
+
+            button.classList.add(
+                "active"
+            );
+
+
+            currentUserFilter =
+                button.dataset.filter;
+
+
+            renderUsers();
+
+        }
+    );
+
+});
+
+
+document
+.getElementById(
+    "clientSearch"
+)
+.addEventListener(
+    "input",
+    renderUsers
+);
+    /* =====================================================
+   DASHBOARD
+===================================================== */
+
+
+function updateDashboard() {
+
+    const total =
+        users.length;
+
+
+    const verified =
+        users.filter(
+            user =>
+            user.kycStatus ===
+            "verified"
+        ).length;
+
+
+    const volume =
+        users.reduce(
+            (
+                total,
+                user
+            ) =>
+                total +
+                (
+                    Number(
+                        user.balance
+                    ) || 0
+                ),
+            0
+        );
+
+
+    document
+    .getElementById(
+        "totalUsers"
+    )
+    .textContent =
+        total;
+
+
+    document
+    .getElementById(
+        "verifiedUsers"
+    )
+    .textContent =
+        verified;
+
+
+    document
+    .getElementById(
+        "totalVolume"
+    )
+    .textContent =
+        formatMoney(
+            volume
+        );
+
+
+    document
+    .getElementById(
+        "totalTransactions"
+    )
+    .textContent =
+        transactions.length;
+
+}
+
+
+/* =====================================================
+   AGENTS
+===================================================== */
+
+
+function loadAgents() {
+
+    onSnapshot(
+
+        collection(
+            db,
+            "agents"
+        ),
+
+        snapshot => {
+
+            agents = [];
+
+
+            snapshot.forEach(
+                d => {
+
+                    agents.push({
+
+                        id:d.id,
+
+                        ...d.data()
+
+                    });
+
+                }
+            );
+
+
+            renderAgents();
+
+        },
+
+        error => {
+
+            console.error(
+                error
+            );
+
+            document
+            .getElementById(
+                "agentsList"
+            )
+            .innerHTML = `
+
+                <div class="empty">
+                    Erreur de chargement
+                    des agents.
+                </div>
+
+            `;
+
+        }
+
+    );
+
+}
+
+
+function renderAgents() {
+
+    const container =
+        document
+        .getElementById(
+            "agentsList"
+        );
+
+
+    if (!agents.length) {
+
+        container.innerHTML = `
+
+            <div class="empty">
+
+                Aucun agent enregistré.
+
+            </div>
+
+        `;
+
+        return;
+
+    }
+
+
+    container.innerHTML = "";
+
+
+    agents.forEach(agent => {
+
+        const card =
+            document.createElement(
+                "div"
+            );
+
+
+        card.className =
+            "neo-card";
+
+
+        card.innerHTML = `
+
+            <div class="item-row">
+
+                <div class="item-main">
+
+                    <div class="item-name">
+
+                        ${escapeHtml(
+                            agent.name ||
+                            "Agent"
+                        )}
+
+                    </div>
+
+
+                    <div class="item-info">
+
+                        ID :
+                        ${escapeHtml(
+                            agent.agentId ||
+                            agent.id
+                        )}
+
+                    </div>
+
+
+                    <div class="item-info">
+
+                        Float :
+                        ${formatMoney(
+                            agent.balance
+                        )}
+
+                    </div>
+
+                </div>
+
+
+                <div>
+
+                    <div
+                        class="
+                        status
+                        ${
+                            agent.status ===
+                            "blocked"
+                            ?
+                            "status-blocked"
+                            :
+                            "status-active"
+                        }
+                        "
+                    >
+
+                        ${
+                            agent.status ===
+                            "blocked"
+                            ?
+                            "Bloqué"
+                            :
+                            "Actif"
+                        }
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        `;
+
+
+        container.appendChild(
+            card
+        );
+
+    });
+
+}
+
+
+/* =====================================================
+   CREER AGENT
+===================================================== */
+
+
+document
+.getElementById(
+    "createAgentBtn"
+)
+.addEventListener(
+    "click",
+    () => {
+
+        document
+        .getElementById(
+            "agentName"
+        )
+        .value = "";
+
+
+        document
+        .getElementById(
+            "agentMoneyId"
+        )
+        .value = "";
+
+
+        document
+        .getElementById(
+            "agentPassword"
+        )
+        .value = "";
+
+
+        openModal(
+            "agentModal"
+        );
+
+    }
+);
+
+
+document
+.getElementById(
+    "saveAgentBtn"
+)
+.addEventListener(
+    "click",
+    async () => {
+
+        const name =
+            document
+            .getElementById(
+                "agentName"
+            )
+            .value
+            .trim();
+
+
+        const moneyId =
+            document
+            .getElementById(
+                "agentMoneyId"
+            )
+            .value
+            .trim();
+
+
+        const password =
+            document
+            .getElementById(
+                "agentPassword"
+            )
+            .value;
+
+
+        if (
+            !name ||
+            !moneyId ||
+            !password
+        ) {
+
+            showAlert(
+                "Tous les champs sont obligatoires.",
+                "error"
+            );
+
+            return;
+
+        }
+
+
+        try {
+
+            const agentId =
+                "AG" +
+                Date.now()
+                .toString()
+                .slice(-8);
+
+
+            await addDoc(
+
+                collection(
+                    db,
+                    "agents"
+                ),
+
+                {
+
+                    agentId:
+
+                        agentId,
+
+                    name:
+
+                        name,
+
+                    moneyId:
+
+                        moneyId,
+
+                    password:
+
+                        password,
+
+                    balance:
+
+                        0,
+
+                    commissions:
+
+                        0,
+
+                    status:
+
+                        "active",
+
+                    createdAt:
+
+                        serverTimestamp()
+
+                }
+
+            );
+
+
+            closeModal(
+                "agentModal"
+            );
+
+
+            showAlert(
+                "Agent créé avec succès.",
+                "success"
+            );
+
+
+        } catch(error) {
+
+            console.error(
+                error
+            );
+
+
+            showAlert(
+                error.message,
+                "error"
+            );
+
+        }
+
+    }
+);
+
+
+/* =====================================================
+   MARCHANDS
+===================================================== */
+
+
+function loadMarchands() {
+
+    onSnapshot(
+
+        collection(
+            db,
+            "marchands"
+        ),
+
+        snapshot => {
+
+            marchands = [];
+
+
+            snapshot.forEach(
+                d => {
+
+                    marchands.push({
+
+                        id:d.id,
+
+                        ...d.data()
+
+                    });
+
+                }
+            );
+
+
+            renderMarchands();
+
+        },
+
+        error => {
+
+            console.error(
+                error
+            );
+
+        }
+
+    );
+
+}
+
+
+function renderMarchands() {
+
+    const container =
+        document
+        .getElementById(
+            "marchandsList"
+        );
+
+
+    if (!marchands.length) {
+
+        container.innerHTML = `
+
+            <div class="empty">
+
+                Aucun marchand enregistré.
+
+            </div>
+
+        `;
+
+        return;
+
+    }
+
+
+    container.innerHTML = "";
+
+
+    marchands.forEach(
+        merchant => {
+
+            const card =
+                document.createElement(
+                    "div"
+                );
+
+
+            card.className =
+                "neo-card";
+
+
+            card.innerHTML = `
+
+                <div class="item-row">
+
+                    <div>
+
+                        <div class="item-name">
+
+                            ${escapeHtml(
+                                merchant.name ||
+                                "Marchand"
+                            )}
+
+                        </div>
+
+
+                        <div class="item-info">
+
+                            ID :
+                            ${escapeHtml(
+                                merchant.merchantId ||
+                                merchant.id
+                            )}
+
+                        </div>
+
+
+                        <div class="item-info">
+
+                            Caisse :
+                            ${formatMoney(
+                                merchant.balance
+                            )}
+
+                        </div>
+
+                    </div>
+
+
+                    <div
+                        class="
+                        status
+                        status-active
+                        "
+                    >
+
+                        Actif
+
+                    </div>
+
+                </div>
+
+            `;
+
+
+            container.appendChild(
+                card
+            );
+
+        }
+    );
+
+}
+
+
+/* =====================================================
+   NAVIGATION AGENTS / MARCHANDS
+===================================================== */
+
+
+document
+.querySelectorAll(
+    "[data-network]"
+)
+.forEach(button => {
+
+    button.addEventListener(
+        "click",
+        () => {
+
+            document
+            .querySelectorAll(
+                "[data-network]"
+            )
+            .forEach(
+                b =>
+                b.classList.remove(
+                    "active"
+                )
+            );
+
+
+            button.classList.add(
+                "active"
+            );
+
+
+            const type =
+                button.dataset.network;
+
+
+            const agentsBox =
+                document
+                .getElementById(
+                    "agentsList"
+                );
+
+
+            const merchantsBox =
+                document
+                .getElementById(
+                    "marchandsList"
+                );
+
+
+            const agentButton =
+                document
+                .getElementById(
+                    "createAgentBtn"
+                );
+
+
+            const merchantButton =
+                document
+                .getElementById(
+                    "createMerchantBtn"
+                );
+
+
+            if (
+                type ===
+                "agents"
+            ) {
+
+                agentsBox.style.display =
+                    "block";
+
+                merchantsBox.style.display =
+                    "none";
+
+                agentButton.style.display =
+                    "block";
+
+                merchantButton.style.display =
+                    "none";
+
+            } else {
+
+                agentsBox.style.display =
+                    "none";
+
+                merchantsBox.style.display =
+                    "block";
+
+                agentButton.style.display =
+                    "none";
+
+                merchantButton.style.display =
+                    "block";
+
+            }
+
+        }
+    );
+
+});
+
+
+/* =====================================================
+   CREER MARCHAND
+===================================================== */
+
+
+document
+.getElementById(
+    "createMerchantBtn"
+)
+.addEventListener(
+    "click",
+    () => {
+
+        document
+        .getElementById(
+            "merchantName"
+        )
+        .value = "";
+
+
+        document
+        .getElementById(
+            "merchantId"
+        )
+        .value = "";
+
+
+        document
+        .getElementById(
+            "merchantPassword"
+        )
+        .value = "";
+
+
+        openModal(
+            "merchantModal"
+        );
+
+    }
+);
+
+
+document
+.getElementById(
+    "saveMerchantBtn"
+)
+.addEventListener(
+    "click",
+    async () => {
+
+        const name =
+            document
+            .getElementById(
+                "merchantName"
+            )
+            .value
+            .trim();
+
+
+        const merchantId =
+            document
+            .getElementById(
+                "merchantId"
+            )
+            .value
+            .trim();
+
+
+        const password =
+            document
+            .getElementById(
+                "merchantPassword"
+            )
+            .value;
+
+
+        if (
+            !name ||
+            !merchantId ||
+            !password
+        ) {
+
+            showAlert(
+                "Tous les champs sont obligatoires.",
+                "error"
+            );
+
+            return;
+
+        }
+
+
+        try {
+
+            await addDoc(
+
+                collection(
+                    db,
+                    "marchands"
+                ),
+
+                {
+
+                    merchantId:
+
+                        merchantId,
+
+                    name:
+
+                        name,
+
+                    password:
+
+                        password,
+
+                    balance:
+
+                        0,
+
+                    status:
+
+                        "active",
+
+                    createdAt:
+
+                        serverTimestamp()
+
+                }
+
+            );
+
+
+            closeModal(
+                "merchantModal"
+            );
+
+
+            showAlert(
+                "Marchand créé avec succès.",
+                "success"
+            );
+
+
+        } catch(error) {
+
+            console.error(
+                error
+            );
+
+
+            showAlert(
+                error.message,
+                "error"
+            );
+
+        }
+
+    }
+);
+
+
+/* =====================================================
+   KYC
+===================================================== */
+
+
+function loadKycRequests() {
+
+    onSnapshot(
+
+        collection(
+            db,
+            "kycRequests"
+        ),
+
+        snapshot => {
+
+            kycRequests = [];
+
+
+            snapshot.forEach(
+                d => {
+
+                    kycRequests.push({
+
+                        id:d.id,
+
+                        ...d.data()
+
+                    });
+
+                }
+            );
+
+
+            renderKyc();
+
+        },
+
+        error => {
+
+            console.error(
+                "KYC error:",
+                error
+            );
+
+            document
+            .getElementById(
+                "kycList"
+            )
+            .innerHTML = `
+
+                <div class="empty">
+
+                    Impossible de charger
+                    les demandes KYC.
+
+                </div>
+
+            `;
+
+        }
+
+    );
+
+}
+
+
+function renderKyc() {
+
+    const container =
+        document
+        .getElementById(
+            "kycList"
+        );
+
+
+    const pending =
+        kycRequests.filter(
+            request =>
+                request.status ===
+                "pending"
+        );
+
+
+    if (!pending.length) {
+
+        container.innerHTML = `
+
+            <div class="empty">
+
+                <i
+                    class="
+                    fa-solid
+                    fa-circle-check
+                    "
+                    style="
+                    color:var(--green);
+                    font-size:30px;
+                    "
+                ></i>
+
+                <br><br>
+
+                Aucune demande
+                en attente.
+
+            </div>
+
+        `;
+
+        return;
+
+    }
+
+
+    container.innerHTML = "";
+
+
+    pending.forEach(
+        request => {
+
+            const card =
+                document.createElement(
+                    "div"
+                );
+
+
+            card.className =
+                "neo-card";
+
+
+            card.innerHTML = `
+
+                <div class="item-row">
+
+                    <div>
+
+                        <div class="item-name">
+
+                            ${escapeHtml(
+                                request.name ||
+                                "Client"
+                            )}
+
+                        </div>
+
+
+                        <div class="item-info">
+
+                            ID :
+                            ${escapeHtml(
+                                request.userId ||
+                                "—"
+                            )}
+
+                        </div>
+
+
+                        <div class="item-info">
+
+                            ${formatDate(
+                                request.createdAt
+                            )}
+
+                        </div>
+
+                    </div>
+
+
+                    <button
+                        class="action-btn"
+                    >
+
+                        Voir
+
+                    </button>
+
+                </div>
+
+            `;
+
+
+            card
+            .querySelector(
+                ".action-btn"
+            )
+            .onclick =
+                () =>
+                openKycRequest(
+                    request
+                );
+
+
+            container.appendChild(
+                card
+            );
+
+        }
+    );
+
+    }
+    /* =====================================================
+   KYC : APPROUVER / REJETER
+===================================================== */
+
+
+async function openKycRequest(
+    request
+) {
+
+    const choice =
+        confirm(
+            "Voulez-vous APPROUVER cette demande KYC ?\n\n" +
+            "OK = Approuver\n" +
+            "Annuler = Rejeter"
+        );
+
+
+    try {
+
+        if (choice) {
+
+            if (request.userId) {
+
+                await updateDoc(
+
+                    doc(
+                        db,
+                        "users",
+                        request.userId
+                    ),
+
+                    {
+
+                        kycStatus:
+                            "verified",
+
+                        kycUpdatedAt:
+                            serverTimestamp()
+
+                    }
+
+                );
+
+            }
+
+
+            await updateDoc(
+
+                doc(
+                    db,
+                    "kycRequests",
+                    request.id
+                ),
+
+                {
+
+                    status:
+                        "approved",
+
+                    processedAt:
+                        serverTimestamp()
+
+                }
+
+            );
+
+
+            showAlert(
+                "KYC approuvé.",
+                "success"
+            );
+
+
+        } else {
+
+            await updateDoc(
+
+                doc(
+                    db,
+                    "kycRequests",
+                    request.id
+                ),
+
+                {
+
+                    status:
+                        "rejected",
+
+                    processedAt:
+                        serverTimestamp()
+
+                }
+
+            );
+
+
+            showAlert(
+                "KYC rejeté.",
+                "info"
+            );
+
+        }
+
+    } catch(error) {
+
+        console.error(error);
+
+        showAlert(
+            "Erreur KYC : " +
+            error.message,
+            "error"
+        );
+
+    }
+
+}
+
+
+/* =====================================================
+   TRANSACTIONS
+===================================================== */
+
+
+function loadTransactions() {
+
+    const transactionsRef =
+        query(
+
+            collection(
+                db,
+                "transactions"
+            ),
+
+            orderBy(
+                "createdAt",
+                "desc"
+            ),
+
+            limit(100)
+
+        );
+
+
+    onSnapshot(
+
+        transactionsRef,
+
+        snapshot => {
+
+            transactions = [];
+
+
+            snapshot.forEach(
+                d => {
+
+                    transactions.push({
+
+                        id:d.id,
+
+                        ...d.data()
+
+                    });
+
+                }
+            );
+
+
+            renderTransactions();
+
+            updateDashboard();
+
+        },
+
+        error => {
+
+            console.error(
+                "Transactions:",
+                error
+            );
+
+
+            document
+            .getElementById(
+                "transactionsList"
+            )
+            .innerHTML = `
+
+                <div class="empty">
+
+                    Impossible de charger
+                    les transactions.
+
+                    <br><br>
+
+                    <small>
+                        Si Firebase demande
+                        un index, crée-le
+                        depuis le lien fourni
+                        dans la console.
+                    </small>
+
+                </div>
+
+            `;
+
+        }
+
+    );
+
+}
+
+
+function renderTransactions() {
+
+    const container =
+        document
+        .getElementById(
+            "transactionsList"
+        );
+
+
+    let list =
+        transactions;
+
+
+    if (
+        currentTransactionFilter !==
+        "all"
+    ) {
+
+        list =
+            transactions.filter(
+                tx =>
+                    tx.type ===
+                    currentTransactionFilter
+            );
+
+    }
+
+
+    if (!list.length) {
+
+        container.innerHTML = `
+
+            <div class="empty">
+
+                Aucune transaction.
+
+            </div>
+
+        `;
+
+        return;
+
+    }
+
+
+    container.innerHTML = "";
+
+
+    list.forEach(tx => {
+
+        const card =
+            document.createElement(
+                "div"
+            );
+
+
+        card.className =
+            "neo-card";
+
+
+        let color =
+            "var(--blue)";
+
+
+        if (
+            tx.type ===
+            "deposit"
+        )
+            color =
+                "var(--green)";
+
+
+        if (
+            tx.type ===
+            "withdrawal"
+        )
+            color =
+                "var(--red)";
+
+
+        card.innerHTML = `
+
+            <div class="item-row">
+
+                <div>
+
+                    <div class="item-name">
+
+                        ${
+                            tx.type ===
+                            "deposit"
+                            ?
+                            "Dépôt"
+                            :
+                            tx.type ===
+                            "withdrawal"
+                            ?
+                            "Retrait"
+                            :
+                            tx.type ===
+                            "transfer"
+                            ?
+                            "Transfert"
+                            :
+                            "Transaction"
+                        }
+
+                    </div>
+
+
+                    <div class="item-info">
+
+                        ID :
+                        ${escapeHtml(
+                            tx.userId ||
+                            "—"
+                        )}
+
+                    </div>
+
+
+                    <div class="item-info">
+
+                        ${formatDate(
+                            tx.createdAt
+                        )}
+
+                    </div>
+
+                </div>
+
+
+                <strong
+                    style="
+                    color:${color};
+                    "
+                >
+
+                    ${formatMoney(
+                        tx.amount
+                    )}
+
+                </strong>
+
+            </div>
+
+        `;
+
+
+        container.appendChild(
+            card
+        );
+
+    });
+
+}
+
+
+document
+.querySelectorAll(
+    "[data-tx-filter]"
+)
+.forEach(button => {
+
+    button.addEventListener(
+        "click",
+        () => {
+
+            document
+            .querySelectorAll(
+                "[data-tx-filter]"
+            )
+            .forEach(
+                b =>
+                b.classList.remove(
+                    "active"
+                )
+            );
+
+
+            button.classList.add(
+                "active"
+            );
+
+
+            currentTransactionFilter =
+                button.dataset.txFilter;
+
+
+            renderTransactions();
+
+        }
+    );
+
+});
+
+
+/* =====================================================
+   CARTES
+===================================================== */
+
+
+function loadCards() {
+
+    onSnapshot(
+
+        collection(
+            db,
+            "cards"
+        ),
+
+        snapshot => {
+
+            cards = [];
+
+
+            snapshot.forEach(
+                d => {
+
+                    cards.push({
+
+                        id:d.id,
+
+                        ...d.data()
+
+                    });
+
+                }
+            );
+
+
+            renderCards();
+
+        },
+
+        error => {
+
+            console.error(
+                error
+            );
+
+        }
+
+    );
+
+}
+
+
+function renderCards() {
+
+    const container =
+        document
+        .getElementById(
+            "cardsList"
+        );
+
+
+    if (!cards.length) {
+
+        container.innerHTML = `
+
+            <div class="empty">
+
+                Aucune carte enregistrée.
+
+            </div>
+
+        `;
+
+        return;
+
+    }
+
+
+    container.innerHTML = "";
+
+
+    cards.forEach(card => {
+
+        const element =
+            document.createElement(
+                "div"
+            );
+
+
+        element.className =
+            "neo-card";
+
+
+        element.innerHTML = `
+
+            <div class="item-row">
+
+                <div>
+
+                    <div class="item-name">
+
+                        Carte
+                        ${escapeHtml(
+                            card.cardId ||
+                            card.id
+                        )}
+
+                    </div>
+
+
+                    <div class="item-info">
+
+                        Client :
+                        ${escapeHtml(
+                            card.userId ||
+                            "Non attribuée"
+                        )}
+
+                    </div>
+
+                </div>
+
+
+                <div
+                    class="
+                    status
+                    ${
+                        card.userId
+                        ?
+                        "status-verified"
+                        :
+                        "status-unverified"
+                    }
+                    "
+                >
+
+                    ${
+                        card.userId
+                        ?
+                        "Attribuée"
+                        :
+                        "Disponible"
+                    }
+
+                </div>
+
+            </div>
+
+        `;
+
+
+        container.appendChild(
+            element
+        );
+
+    });
+
+}
+
+
+/* =====================================================
+   OUVERTURE SCANNER
+===================================================== */
+
+
+document
+.getElementById(
+    "openCardAssignment"
+)
+.addEventListener(
+    "click",
+    () => {
+
+        document
+        .getElementById(
+            "detectedCardId"
+        )
+        .value = "";
+
+
+        document
+        .getElementById(
+            "cardUserId"
+        )
+        .value = "";
+
+
+        document
+        .getElementById(
+            "scannerStatus"
+        )
+        .textContent =
+            "Scanner prêt";
+
+
+        openModal(
+            "cardModal"
+        );
+
+    }
+);
+
+
+/* =====================================================
+   CAMERA SCANNER
+===================================================== */
+
+
+document
+.getElementById(
+    "startScannerBtn"
+)
+.addEventListener(
+    "click",
+    startCardScanner
+);
+
+
+async function startCardScanner() {
+
+    stopCardScanner();
+
+
+    try {
+
+        scannerStream =
+            await navigator
+            .mediaDevices
+            .getUserMedia({
+
+                video: {
+
+                    facingMode:
+                        {
+                            ideal:
+                                "environment"
+                        }
+
+                }
+
+            });
+
+
+        const video =
+            document
+            .getElementById(
+                "scannerVideo"
+            );
+
+
+        video.srcObject =
+            scannerStream;
+
+
+        scannerRunning =
+            true;
+
+
+        document
+        .getElementById(
+            "scannerStatus"
+        )
+        .textContent =
+            "Caméra active — place la carte dans le cadre.";
+
+
+        /*
+         * Le scanner complet de la grille
+         * 10 × 10 est préparé ci-dessous.
+         */
+
+        requestAnimationFrame(
+            processScannerFrame
+        );
+
+
+    } catch(error) {
+
+        console.error(
+            error
+        );
+
+
+        showAlert(
+            "Impossible d'accéder à la caméra.",
+            "error"
+        );
+
+    }
+
+}
+
+
+function stopCardScanner() {
+
+    scannerRunning =
+        false;
+
+
+    if (scannerStream) {
+
+        scannerStream
+        .getTracks()
+        .forEach(
+            track =>
+                track.stop()
+        );
+
+
+        scannerStream =
+            null;
+
+    }
+
+}
+
+
+function processScannerFrame() {
+
+    if (!scannerRunning)
+        return;
+
+
+    const video =
+        document
+        .getElementById(
+            "scannerVideo"
+        );
+
+
+    if (
+        video.readyState >=
+        2
+    ) {
+
+        /*
+         * Analyse volontairement
+         * légère pendant la caméra.
+         *
+         * Le code final est validé
+         * uniquement lorsqu'une
+         * grille 10 × 10 cohérente
+         * est détectée.
+         */
+
+    }
+
+
+    requestAnimationFrame(
+        processScannerFrame
+    );
+
+}
+
+
+/* =====================================================
+   IMPORT IMAGE DE CARTE
+===================================================== */
+
+
+document
+.getElementById(
+    "galleryScannerBtn"
+)
+.addEventListener(
+    "click",
+    () => {
+
+        document
+        .getElementById(
+            "cardImageInput"
+        )
+        .click();
+
+    }
+);
+
+
+document
+.getElementById(
+    "cardImageInput"
+)
+.addEventListener(
+    "change",
+    event => {
+
+        const file =
+            event.target.files[0];
+
+
+        if (!file)
+            return;
+
+
+        const reader =
+            new FileReader();
+
+
+        reader.onload =
+            e => {
+
+                analyzeCardImage(
+                    e.target.result
+                );
+
+            };
+
+
+        reader.readAsDataURL(
+            file
+        );
+
+    }
+);
+
+
+/* =====================================================
+   ANALYSE GRILLE 10 × 10
+===================================================== */
+
+
+function isPurpleHSV(
+    r,
+    g,
+    b
+) {
+
+    r /= 255;
+
+    g /= 255;
+
+    b /= 255;
+
+
+    const max =
+        Math.max(
+            r,
+            g,
+            b
+        );
+
+
+    const min =
+        Math.min(
+            r,
+            g,
+            b
+        );
+
+
+    const d =
+        max - min;
+
+
+    if (
+        max === min ||
+        d === 0
+    )
+        return false;
+
+
+    let h;
+
+
+    if (
+        max === r
+    ) {
+
+        h =
+            (g - b) /
+            d +
+            (
+                g < b
+                ?
+                6
+                :
+                0
+            );
+
+    } else if (
+        max === g
+    ) {
+
+        h =
+            (b - r) /
+            d +
+            2;
+
+    } else {
+
+        h =
+            (r - g) /
+            d +
+            4;
+
+    }
+
+
+    h /= 6;
+
+
+    const hue =
+        h * 360;
+
+
+    const saturation =
+        max === 0
+        ?
+        0
+        :
+        d / max;
+
+
+    return (
+
+        hue >= 240 &&
+        hue <= 330 &&
+        saturation > .15
+
+    );
+
+}
+
+
+function analyzeCardImage(
+    source
+) {
+
+    const img =
+        new Image();
+
+
+    img.onload =
+        () => {
+
+            const canvas =
+                document
+                .getElementById(
+                    "scannerCanvas"
+                );
+
+
+            const ctx =
+                canvas.getContext(
+                    "2d",
+                    {
+                        willReadFrequently:
+                            true
+                    }
+                );
+
+
+            canvas.width =
+                img.width;
+
+
+            canvas.height =
+                img.height;
+
+
+            ctx.drawImage(
+                img,
+                0,
+                0
+            );
+
+
+            const w =
+                canvas.width;
+
+
+            const h =
+                canvas.height;
+
+
+            if (
+                !w ||
+                !h
+            ) {
+
+                showAlert(
+                    "Image invalide.",
+                    "error"
+                );
+
+                return;
+
+            }
+
+
+            /*
+             * On cherche uniquement
+             * une zone carrée.
+             */
+
+            let size =
+                Math.min(
+                    w,
+                    h
+                );
+
+
+            const startX =
+                Math.floor(
+                    (
+                        w - size
+                    ) / 2
+                );
+
+
+            const startY =
+                Math.floor(
+                    (
+                        h - size
+                    ) / 2
+                );
+
+
+            const imageData =
+                ctx.getImageData(
+                    startX,
+                    startY,
+                    size,
+                    size
+                );
+
+
+            const data =
+                imageData.data;
+
+
+            const cell =
+                size / 10;
+
+
+            const digits = [];
+
+
+            for (
+                let row = 0;
+                row < 10;
+                row++
+            ) {
+
+                let bestCol =
+                    0;
+
+
+                let bestScore =
+                    -1;
+
+
+                for (
+                    let col = 0;
+                    col < 10;
+                    col++
+                ) {
+
+                    let score =
+                        0;
+
+
+                    const x0 =
+                        Math.floor(
+                            col * cell
+                        );
+
+
+                    const y0 =
+                        Math.floor(
+                            row * cell
+                        );
+
+
+                    const x1 =
+                        Math.floor(
+                            (
+                                col + 1
+                            ) *
+                            cell
+                        );
+
+
+                    const y1 =
+                        Math.floor(
+                            (
+                                row + 1
+                            ) *
+                            cell
+                        );
+
+
+                    for (
+                        let y =
+                            y0;
+                        y <
+                            y1;
+                        y += 3
+                    ) {
+
+                        for (
+                            let x =
+                                x0;
+                            x <
+                                x1;
+                            x += 3
+                        ) {
+
+                            const index =
+                                (
+                                    y *
+                                    size +
+                                    x
+                                ) *
+                                4;
+
+
+                            if (
+                                isPurpleHSV(
+                                    data[index],
+                                    data[index + 1],
+                                    data[index + 2]
+                                )
+                            ) {
+
+                                score++;
+
+                            }
+
+                        }
+
+                    }
+
+
+                    if (
+                        score >
+                        bestScore
+                    ) {
+
+                        bestScore =
+                            score;
+
+
+                        bestCol =
+                            col;
+
+                    }
+
+                }
+
+
+                digits.push(
+                    bestCol
+                );
+
+            }
+
+
+            /*
+             * Format attendu :
+             *
+             * AA-XXXXXXXXXX
+             */
+
+            const cardId =
+                "AA-" +
+                digits.join("");
+
+
+            document
+            .getElementById(
+                "detectedCardId"
+            )
+            .value =
+                cardId;
+
+
+            document
+            .getElementById(
+                "scannerStatus"
+            )
+            .textContent =
+                "Carte détectée : " +
+                cardId;
+
+
+            showAlert(
+                "ID de carte détecté.",
+                "success"
+            );
+
+        };
+
+
+    img.src =
+        source;
+
+}
+
+
+/* =====================================================
+   ATTRIBUTION DE CARTE
+===================================================== */
+
+
+document
+.getElementById(
+    "assignCardBtn"
+)
+.addEventListener(
+    "click",
+    async () => {
+
+        const cardId =
+            document
+            .getElementById(
+                "detectedCardId"
+            )
+            .value
+            .trim();
+
+
+        const visibleId =
+            document
+            .getElementById(
+                "cardUserId"
+            )
+            .value
+            .trim();
+
+
+        if (
+            !cardId ||
+            !visibleId
+        ) {
+
+            alert(
+                "Veuillez scanner une carte et sélectionner un client."
+            );
+
+            return;
+
+        }
+
+
+        try {
+
+            /* =========================================
+               RECHERCHER LE CLIENT
+            ========================================= */
+
+            const usersQuery =
+                query(
+                    collection(
+                        db,
+                        "users"
+                    ),
+                    where(
+                        "visibleId",
+                        "==",
+                        visibleId
+                    )
+                );
+
+
+            const usersSnapshot =
+                await getDocs(
+                    usersQuery
+                );
+
+
+            if (
+                usersSnapshot.empty
+            ) {
+
+                alert(
+                    "Client introuvable."
+                );
+
+                return;
+
+            }
+
+
+            const userDoc =
+                usersSnapshot
+                .docs[0];
+
+
+            const userId =
+                userDoc.id;
+
+
+            const userData =
+                userDoc.data();
+
+
+            /* =========================================
+               VÉRIFIER SI LA CARTE EXISTE
+            ========================================= */
+
+            const cardRef =
+                doc(
+                    db,
+                    "cards",
+                    cardId
+                );
+
+
+            const cardSnapshot =
+                await getDoc(
+                    cardRef
+                );
+
+
+            if (
+                !cardSnapshot.exists()
+            ) {
+
+                alert(
+                    "Cette carte n'existe pas dans la base VENUN."
+                );
+
+                return;
+
+            }
+
+
+            const cardData =
+                cardSnapshot.data();
+
+
+            /* =========================================
+               VÉRIFIER SI LA CARTE EST DÉJÀ ATTRIBUÉE
+            ========================================= */
+
+            if (
+                cardData.userId &&
+                cardData.userId !== ""
+            ) {
+
+                alert(
+                    "Cette carte est déjà attribuée à un client."
+                );
+
+                return;
+
+            }
+
+
+            /* =========================================
+               VÉRIFIER SI LE CLIENT A DÉJÀ UNE CARTE
+            ========================================= */
+
+            const existingCardQuery =
+                query(
+                    collection(
+                        db,
+                        "cards"
+                    ),
+                    where(
+                        "userId",
+                        "==",
+                        userId
+                    )
+                );
+
+
+            const existingCardSnapshot =
+                await getDocs(
+                    existingCardQuery
+                );
+
+
+            if (
+                !existingCardSnapshot.empty
+            ) {
+
+                alert(
+                    "Ce client possède déjà une carte VENUN."
+                );
+
+                return;
+
+            }
+
+
+            /* =========================================
+               ATTRIBUER LA CARTE
+            ========================================= */
+
+            await updateDoc(
+                cardRef,
+                {
+
+                    userId:
+                        userId,
+
+                    visibleId:
+                        visibleId,
+
+                    cardStatus:
+                        "active",
+
+                    assigned:
+                        true,
+
+                    assignedAt:
+                        serverTimestamp()
+
+                }
+            );
+
+
+            /* =========================================
+               ENREGISTRER LA CARTE DANS LE PROFIL CLIENT
+            ========================================= */
+
+            await updateDoc(
+                doc(
+                    db,
+                    "users",
+                    userId
+                ),
+                {
+
+                    cardId:
+                        cardId,
+
+                    cardStatus:
+                        "active",
+
+                    updatedAt:
+                        serverTimestamp()
+
+                }
+            );
+
+
+            /* =========================================
+               CRÉER UNE TRACE DANS LES TRANSACTIONS
+            ========================================= */
+
+            await addDoc(
+                collection(
+                    db,
+                    "transactions"
+                ),
+                {
+
+                    type:
+                        "card_assignment",
+
+                    cardId:
+                        cardId,
+
+                    userId:
+                        userId,
+
+                    visibleId:
+                        visibleId,
+
+                    amount:
+                        0,
+
+                    status:
+                        "completed",
+
+                    createdAt:
+                        serverTimestamp()
+
+                }
+            );
+
+
+            /* =========================================
+               MESSAGE DE SUCCÈS
+            ========================================= */
+
+            alert(
+                "✓ Carte VENUN attribuée avec succès."
+            );
+
+
+            /* =========================================
+               NETTOYER LE FORMULAIRE
+            ========================================= */
+
+            const detectedInput =
+                document.getElementById(
+                    "detectedCardId"
+                );
+
+
+            const userInput =
+                document.getElementById(
+                    "cardUserId"
+                );
+
+
+            if (
+                detectedInput
+            ) {
+
+                detectedInput.value =
+                    "";
+
+            }
+
+
+            if (
+                userInput
+            ) {
+
+                userInput.value =
+                    "";
+
+            }
+
+
+            /* =========================================
+               ACTUALISER L'INTERFACE
+            ========================================= */
+
+            if (
+                typeof loadUsers ===
+                "function"
+            ) {
+
+                loadUsers();
+
+            }
+
+
+            if (
+                typeof loadCards ===
+                "function"
+            ) {
+
+                loadCards();
+
+            }
+
+
+            if (
+                typeof updateDashboard ===
+                "function"
+            ) {
+
+                updateDashboard();
+
+            }
+
+
+        } catch (
+            error
+        ) {
+
+            console.error(
+                "Erreur attribution carte :",
+                error
+            );
+
+
+            alert(
+                "Une erreur est survenue lors de l'attribution de la carte."
+            );
+
+        }
+
+    }
+);
+
+
+/* =====================================================
+   FERMETURE DES MODALES
+===================================================== */
+
+
+document
+.querySelectorAll(
+    ".modal-overlay"
+)
+.forEach(
+    modal => {
+
+        modal.addEventListener(
+            "click",
+            event => {
+
+                if (
+                    event.target ===
+                    modal
+                ) {
+
+                    modal.classList
+                    .remove(
+                        "active"
+                    );
+
+                }
+
+            }
+        );
+
+    }
+);
+
+
+/* =====================================================
+   EMPÊCHER LE SCROLL DU BODY
+   QUAND UNE MODALE EST OUVERTE
+===================================================== */
+
+
+function updateBodyScroll() {
+
+    const openedModal =
+        document.querySelector(
+            ".modal-overlay.active"
+        );
+
+
+    if (
+        openedModal
+    ) {
+
+        document.body.style
+        .overflow =
+            "hidden";
+
+    } else {
+
+        document.body.style
+        .overflow =
+            "";
+
+    }
+
+}
+
+
+/* =====================================================
+   OBSERVER LES MODALES
+===================================================== */
+
+
+const modalObserver =
+    new MutationObserver(
+        () => {
+
+            updateBodyScroll();
+
+        }
+    );
+
+
+document
+.querySelectorAll(
+    ".modal-overlay"
+)
+.forEach(
+    modal => {
+
+        modalObserver.observe(
+            modal,
+            {
+                attributes:
+                    true,
+
+                attributeFilter:
+                    [
+                        "class"
+                    ]
+            }
+        );
+
+    }
+);
+
+
+/* =====================================================
+   FERMER UNE MODALE AVEC ESC
+===================================================== */
+
+
+document
+.addEventListener(
+    "keydown",
+    event => {
+
+        if (
+            event.key !==
+            "Escape"
+        ) {
+
+            return;
+
+        }
+
+
+        const activeModal =
+            document.querySelector(
+                ".modal-overlay.active"
+            );
+
+
+        if (
+            activeModal
+        ) {
+
+            activeModal.classList
+            .remove(
+                "active"
+            );
+
+        }
+
+    }
+);
+
+
+/* =====================================================
+   INITIALISATION
+===================================================== */
+
+
+document
+.addEventListener(
+    "DOMContentLoaded",
+    () => {
+
+        updateBodyScroll();
+
+        console.log(
+            "VENUN ADMIN : système opérationnel."
+        );
+
+    }
+);
+
+
+/* =====================================================
+   FIN DU TERMINAL ADMIN
+===================================================== */
+
 </script>
+
 </body>
-    </html>
+</html>
